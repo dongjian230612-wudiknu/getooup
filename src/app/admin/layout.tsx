@@ -9,21 +9,28 @@ import {
   Users, 
   Settings, 
   LogOut,
-  Menu,
-  X
+  Search,
+  Layers,
+  Grid,
+  Box,
+  Tag,
+  DollarSign,
 } from 'lucide-react';
 
 const navItems = [
-  { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, href: '/admin/dashboard' },
   { id: 'orders', label: 'Orders', icon: ShoppingBag, href: '/admin/orders' },
   { id: 'products', label: 'Products', icon: Package, href: '/admin/products' },
+  { id: 'collections', label: 'Collections', icon: Layers, href: '#' },
+  { id: 'categories', label: 'Categories', icon: Grid, href: '#' },
+  { id: 'inventory', label: 'Inventory', icon: Box, href: '#' },
   { id: 'customers', label: 'Customers', icon: Users, href: '/admin/customers' },
+  { id: 'promotions', label: 'Promotions', icon: Tag, href: '#' },
+  { id: 'pricelists', label: 'Price Lists', icon: DollarSign, href: '#' },
   { id: 'settings', label: 'Settings', icon: Settings, href: '/admin/settings' },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const pathname = usePathname();
@@ -51,13 +58,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black"></div>
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="animate-spin h-8 w-8 border-b-2 border-black"></div>
       </div>
     );
   }
 
-  // 登录页面直接显示内容，不包裹 layout
   if (isLoginPage) {
     return <>{children}</>;
   }
@@ -67,84 +73,69 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 flex">
-      {/* Mobile Overlay */}
-      {isSidebarOpen && (
-        <div 
-          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
-          onClick={() => setIsSidebarOpen(false)}
-        />
-      )}
-
+    <div className="min-h-screen bg-white flex">
       {/* Sidebar */}
-      <aside className={`
-        fixed lg:static inset-y-0 left-0 w-64 bg-black text-white z-50
-        transform transition-transform duration-300
-        ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
-      `}>
-        <div className="p-6">
-          <h1 className="text-xl font-light tracking-widest">GETOOUP</h1>
-          <p className="text-gray-400 text-sm">Admin</p>
+      <aside className="w-64 border-r bg-white flex flex-col fixed inset-y-0 left-0">
+        {/* Logo */}
+        <div className="h-14 border-b flex items-center px-4">
+          <a href="/admin/dashboard" className="flex items-center gap-2">
+            <div className="w-8 h-8 bg-black text-white rounded flex items-center justify-center font-bold text-sm">
+              G
+            </div>
+            <span className="font-medium">Getooup</span>
+          </a>
         </div>
 
-        <nav className="px-4 pb-4">
+        {/* Search */}
+        <div className="p-3 border-b">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+            <input
+              type="text"
+              placeholder="Search"
+              className="w-full pl-9 pr-3 py-2 bg-gray-50 border rounded-lg text-sm focus:outline-none focus:border-gray-400"
+            />
+          </div>
+        </div>
+
+        {/* Nav */}
+        <nav className="flex-1 px-2 py-2 overflow-auto">
           {navItems.map((item) => {
             const Icon = item.icon;
-            const isActive = pathname === item.href;
+            const isActive = pathname.startsWith(item.href) && item.href !== '#';
             return (
               <a
                 key={item.id}
                 href={item.href}
-                onClick={() => setIsSidebarOpen(false)}
                 className={`
-                  flex items-center gap-3 px-4 py-3 rounded-lg mb-1
-                  transition-colors
+                  flex items-center gap-3 px-3 py-2 rounded-lg text-sm mb-0.5
                   ${isActive 
-                    ? 'bg-white text-black' 
-                    : 'text-gray-300 hover:bg-white/10 hover:text-white'}
+                    ? 'bg-gray-100 text-black font-medium' 
+                    : 'text-gray-600 hover:bg-gray-50'}
                 `}
               >
-                <Icon size={20} />
+                <Icon size={18} />
                 <span>{item.label}</span>
               </a>
             );
           })}
         </nav>
 
-        <div className="absolute bottom-0 left-0 right-0 p-4">
+        {/* Logout */}
+        <div className="p-2 border-t">
           <button
             onClick={handleLogout}
-            className="flex items-center gap-3 px-4 py-3 text-gray-300 hover:text-white w-full"
+            className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-50"
           >
-            <LogOut size={20} />
+            <LogOut size={18} />
             <span>Logout</span>
           </button>
         </div>
       </aside>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col min-h-screen overflow-auto">
-        {/* Header */}
-        <header className="bg-white border-b px-6 py-4 flex items-center justify-between sticky top-0 z-30">
-          <button
-            onClick={() => setIsSidebarOpen(true)}
-            className="lg:hidden p-2 hover:bg-gray-100 rounded"
-          >
-            <Menu size={24} />
-          </button>
-
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-gray-500">Welcome, Admin</span>
-            <div className="w-8 h-8 bg-black text-white rounded-full flex items-center justify-center text-sm">
-              A
-            </div>
-          </div>
-        </header>
-
-        {/* Page Content */}
-        <main className="flex-1 p-6">
-          {children}
-        </main>
+      <div className="flex-1 ml-64">
+        {children}
       </div>
     </div>
   );
