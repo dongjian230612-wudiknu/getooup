@@ -30,20 +30,24 @@ function getColorHex(color: string): string {
   return colorMap[color] || '#cccccc';
 }
 
-// 生成 Sphere 选项: -18.00 到 +10.00，步进 0.25
+// 生成 Sphere 选项: -18.00 到 +10.00，步进 0.25，0.00 排在最前
 function generateSphereOptions(): string[] {
-  const options: string[] = [];
-  for (let v = -18.0; v <= 10.0; v += 0.25) {
-    const val = v.toFixed(2);
-    options.push(v >= 0 ? `+${val}` : val);
+  const options: string[] = ['0.00'];
+  // 负数部分从 -0.25 到 -18.00
+  for (let v = -0.25; v >= -18.0; v -= 0.25) {
+    options.push(v.toFixed(2));
+  }
+  // 正数部分从 +0.25 到 +10.00
+  for (let v = 0.25; v <= 10.0; v += 0.25) {
+    options.push(`+${v.toFixed(2)}`);
   }
   return options;
 }
 
-// 生成 Cylinder 选项: -6.00 到 0.00，步进 0.25
+// 生成 Cylinder 选项: -6.00 到 0.00，步进 0.25，0.00 排在最前
 function generateCylinderOptions(): string[] {
-  const options: string[] = [];
-  for (let v = -6.0; v <= 0.0; v += 0.25) {
+  const options: string[] = ['0.00'];
+  for (let v = -0.25; v >= -6.0; v -= 0.25) {
     options.push(v.toFixed(2));
   }
   return options;
@@ -436,7 +440,15 @@ function ProductModal({ product, selectedColor, setSelectedColor, selectedLens, 
 
   const handlePrescriptionChoice = (hasRx: boolean) => {
     setHasPrescription(hasRx);
-    if (!hasRx) {
+    if (hasRx) {
+      // 有处方，设置默认值为 0.00
+      setPrescription({
+        rightSphere: '0.00', rightCylinder: '0.00', rightAxis: '',
+        leftSphere: '0.00', leftCylinder: '0.00', leftAxis: '',
+        pd: '', add: ''
+      });
+    } else {
+      // 无处方，清空
       setPrescription({
         rightSphere: '', rightCylinder: '', rightAxis: '',
         leftSphere: '', leftCylinder: '', leftAxis: '',
