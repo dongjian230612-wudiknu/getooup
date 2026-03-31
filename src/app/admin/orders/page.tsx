@@ -81,8 +81,12 @@ export default function Orders() {
           </thead>
           <tbody>
             {filteredOrders.map((order) => (
-              <tr key={order.id} className="border-b hover:bg-gray-50">
-                <td className="py-3 px-6 text-sm">{order.id}</td>
+              <tr 
+                key={order.id} 
+                className="border-b hover:bg-gray-50 cursor-pointer"
+                onClick={() => window.location.href = '/admin/orders/detail/'}
+              >
+                <td className="py-3 px-6 text-sm font-medium text-blue-600">{order.id}</td>
                 <td className="py-3 px-4">
                   <div>
                     <p className="text-sm">{order.customer}</p>
