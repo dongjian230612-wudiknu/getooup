@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { ShoppingCart, User, Menu, X, Search } from 'lucide-react';
 import { products, lensOptions } from '@/lib/data';
 import { Product, CartItem, Prescription, LensOption } from '@/types';
@@ -904,16 +905,24 @@ function ProductModal({ product, selectedColor, setSelectedColor, selectedLens, 
 
 // Cart Sidebar Component
 function CartSidebar({ cart, onClose, total }: { cart: CartItem[], onClose: () => void, total: number }) {
+  const router = useRouter();
+  
+  const handleCheckout = () => {
+    localStorage.setItem('cart', JSON.stringify(cart));
+    onClose();
+    router.push('/checkout');
+  };
+  
   return (
     <div className="fixed inset-0 z-50 flex justify-end">
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-      <div className="relative w-full max-w-md bg-white h-full shadow-xl">
+      <div className="relative w-full max-w-md bg-white h-full shadow-xl flex flex-col">
         <div className="p-4 border-b flex justify-between items-center">
           <h2 className="font-medium">Cart ({cart.length})</h2>
           <button onClick={onClose}><X size={20} /></button>
         </div>
         
-        <div className="p-4">
+        <div className="flex-1 overflow-auto p-4">
           {cart.length === 0 ? (
             <p className="text-center text-gray-500 py-8">Your cart is empty</p>
           ) : (
@@ -927,17 +936,27 @@ function CartSidebar({ cart, onClose, total }: { cart: CartItem[], onClose: () =
                   <p className="text-sm text-gray-500">{item.color} / {item.lens.name}</p>
                 </div>
               ))}
-              
-              <div className="pt-4">
-                <div className="flex justify-between text-xl font-medium mb-4">
-                  <span>Total</span>
-                  <span>${total}</span>
-                </div>
-                <button className="w-full bg-black text-white py-4 rounded-full">Checkout</button>
-              </div>
             </>
           )}
         </div>
+        
+        {cart.length > 0 && (
+          <div className="p-4 border-t">
+            <div className="flex justify-between text-xl font-medium mb-4">
+              <span>Total</span>
+              <span>${total}</span>
+            </div>
+            <button 
+              onClick={handleCheckout}
+              className="w-full bg-black text-white py-4 rounded-full hover:bg-gray-800"
+            >
+              Checkout
+            </button>
+            <p className="text-center text-sm text-gray-500 mt-2">
+              Shipping calculated at checkout
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );
