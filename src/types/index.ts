@@ -6,6 +6,7 @@ export interface Product {
   colors: string[];
   image: string;
   category: 'standard' | 'asiafit';
+  bestSeller?: boolean;
 }
 
 export interface LensOption {
