@@ -20,6 +20,7 @@ import {
 const navItems = [
   { id: 'orders', label: 'Orders', icon: ShoppingBag, href: '/admin/orders' },
   { id: 'products', label: 'Products', icon: Package, href: '/admin/products' },
+  { id: 'lens', label: 'Lens', icon: Layers, href: '/admin/lens' },
   { id: 'collections', label: 'Collections', icon: Layers, href: '#' },
   { id: 'categories', label: 'Categories', icon: Grid, href: '#' },
   { id: 'inventory', label: 'Inventory', icon: Box, href: '#' },
