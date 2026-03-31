@@ -6,6 +6,29 @@ import { products, lensOptions } from '@/lib/data';
 import { Product, CartItem, Prescription, LensOption } from '@/types';
 import { formatPrice, validatePrescription } from '@/lib/utils';
 
+// 辅助函数：获取颜色对应的十六进制值
+function getColorHex(color: string): string {
+  const colorMap: Record<string, string> = {
+    'Black': '#000000',
+    'Tortoise': '#8B4513',
+    'Bean Red': '#A0522D',
+    'Purple': '#9370DB',
+    'Tea Grey': '#9CA3AF',
+    'Light Brown': '#D2B48C',
+    'Grey': '#808080',
+    'Brown': '#8B4513',
+    'Gold': '#FFD700',
+    'Silver': '#C0C0C0',
+    'Clear': 'rgba(200,200,200,0.3)',
+    'Clear Tea': '#D2B48C',
+    'Clear Grey': 'rgba(128,128,128,0.3)',
+    'Gunmetal': '#2C3539',
+    'Pink': '#FFC0CB',
+    'Black White': '#333333',
+  };
+  return colorMap[color] || '#cccccc';
+}
+
 export default function Home() {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -175,32 +198,47 @@ export default function Home() {
             <p className="text-gray-500">Statistics for the last month</p>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
             {products.slice(0, 8).map((product) => (
               <div key={product.id} className="group cursor-pointer" onClick={() => openProduct(product)}>
+                {/* 产品图片区域 */}
                 <div className="relative aspect-square bg-white rounded-lg overflow-hidden mb-3">
                   {product.image ? (
-                    <img src={product.image} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                    <img src={product.image} alt={product.name} className="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform" />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-6xl">👓</div>
                   )}
-                  <button className="absolute top-2 right-2 bg-white/90 px-3 py-1 rounded-full text-xs flex items-center gap-1">
-                    📷 AR Try-On
-                  </button>
+                  
+                  {/* Best Seller 标签 - 左上 */}
                   {product.bestSeller && (
-                    <div className="absolute top-2 left-2 bg-black text-white px-2 py-1 text-xs">
+                    <div className="absolute top-3 left-3 bg-black text-white px-3 py-1 text-xs rounded">
                       Best Seller
                     </div>
                   )}
+                  
+                  {/* AR Try-On 按钮 - 底部中央 */}
+                  <button className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-white/95 border border-gray-200 px-4 py-1.5 rounded-full text-xs flex items-center gap-1.5 shadow-sm opacity-0 group-hover:opacity-100 transition-opacity">
+                    <span>📷</span> AR Try-On
+                  </button>
                 </div>
-                <div className="flex justify-between items-start mb-2">
-                  <h3 className="font-medium">{product.name}</h3>
-                  <span className="font-medium">${product.price}</span>
-                </div>
-                <div className="flex gap-2">
-                  {product.colors.map((color) => (
-                    <span key={color} className="w-4 h-4 rounded-full border border-gray-300" title={color} />
-                  ))}
+                
+                {/* 产品信息 */}
+                <div className="px-1">
+                  <h3 className="font-medium text-lg mb-1">{product.name}</h3>
+                  <p className="font-medium mb-2">${product.price}</p>
+                  
+                  {/* 颜色选择器 - 小方块 */}
+                  <div className="flex gap-1.5">
+                    {product.colors.slice(0, 4).map((color, idx) => (
+                      <div 
+                        key={idx} 
+                        className="w-5 h-5 rounded-sm border border-gray-300 overflow-hidden" 
+                        title={color}
+                      >
+                        <div className="w-full h-full" style={{ backgroundColor: getColorHex(color) }} />
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             ))}
@@ -343,18 +381,6 @@ function ProductModal({ product, selectedColor, setSelectedColor, selectedLens, 
 
   const total = product.price + (selectedLens?.price || 0) + (selectedHighIndex === '1.67' ? 40 : selectedHighIndex === '1.74' ? 80 : 0) + (isProgressive ? 80 : 0);
 
-  const getColorStyle = (color: string) => {
-    const colors: Record<string, string> = {
-      'Black': '#000', 'Tortoise': '#8B4513', 'Bean Red': '#A0522D',
-      'Purple': '#9370DB', 'Tea Grey': '#9CA3AF', 'Light Brown': '#D2B48C',
-      'Grey': '#808080', 'Brown': '#8B4513', 'Gold': '#FFD700',
-      'Silver': '#C0C0C0', 'Clear': 'rgba(200,200,200,0.3)',
-      'Clear Tea': '#D2B48C', 'Clear Grey': 'rgba(128,128,128,0.3)',
-      'Gunmetal': '#2C3539', 'Pink': '#FFC0CB', 'Black White': '#333'
-    };
-    return colors[color] || '#ccc';
-  };
-
   return (
     <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
       <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-auto">
@@ -384,7 +410,7 @@ function ProductModal({ product, selectedColor, setSelectedColor, selectedLens, 
                   {product.colors.map((color: string) => (
                     <button key={color} onClick={() => setSelectedColor(color)} 
                       className={`w-full p-3 border rounded-lg text-sm text-left flex items-center gap-3 ${selectedColor === color ? 'border-black bg-gray-50' : ''}`}>
-                      <span className="w-6 h-6 rounded-full border border-gray-300" style={{ backgroundColor: getColorStyle(color) }} />
+                      <span className="w-6 h-6 rounded-full border border-gray-300" style={{ backgroundColor: getColorHex(color) }} />
                       {color}
                     </button>
                   ))}
