@@ -130,10 +130,10 @@ export default function Home() {
 
             {/* Desktop Navigation */}
             <nav className="hidden md:flex items-center gap-8">
-              <a href="#standard" className="text-sm hover:opacity-70 transition-opacity">Standard</a>
-              <a href="#asiafit" className="text-sm hover:opacity-70 transition-opacity">AsiaFit</a>
+              <a href="#eyeglasses" className="text-sm hover:opacity-70 transition-opacity">Eyeglasses</a>
               <a href="#sunglasses" className="text-sm hover:opacity-70 transition-opacity">Sunglasses</a>
-              <a href="#lenses" className="text-sm hover:opacity-70 transition-opacity">Lenses</a>
+              <a href="#brand" className="text-sm hover:opacity-70 transition-opacity">Brand</a>
+              <a href="#quiz" className="text-sm hover:opacity-70 transition-opacity">Quiz Results</a>
             </nav>
 
             {/* Icons */}
@@ -160,10 +160,10 @@ export default function Home() {
             <button onClick={() => setIsMenuOpen(false)}><X size={24} /></button>
           </div>
           <nav className="p-6 space-y-6 text-lg">
-            <a href="#standard" onClick={() => setIsMenuOpen(false)} className="block">Standard</a>
-            <a href="#asiafit" onClick={() => setIsMenuOpen(false)} className="block">AsiaFit</a>
+            <a href="#eyeglasses" onClick={() => setIsMenuOpen(false)} className="block">Eyeglasses</a>
             <a href="#sunglasses" onClick={() => setIsMenuOpen(false)} className="block">Sunglasses</a>
-            <a href="#lenses" onClick={() => setIsMenuOpen(false)} className="block">Lenses</a>
+            <a href="#brand" onClick={() => setIsMenuOpen(false)} className="block">Brand</a>
+            <a href="#quiz" onClick={() => setIsMenuOpen(false)} className="block">Quiz Results</a>
           </nav>
         </div>
       )}
