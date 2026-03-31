@@ -28,7 +28,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const router = useRouter();
   const pathname = usePathname();
 
+  const isLoginPage = pathname === '/admin' || pathname === '/admin/';
+
   useEffect(() => {
+    if (isLoginPage) {
+      setLoading(false);
+      return;
+    }
     const token = localStorage.getItem('admin_token');
     if (!token) {
       router.push('/admin');
@@ -36,7 +42,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       setIsAuthenticated(true);
     }
     setLoading(false);
-  }, [router]);
+  }, [router, isLoginPage]);
 
   const handleLogout = () => {
     localStorage.removeItem('admin_token');
@@ -49,6 +55,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black"></div>
       </div>
     );
+  }
+
+  // 登录页面直接显示内容，不包裹 layout
+  if (isLoginPage) {
+    return <>{children}</>;
   }
 
   if (!isAuthenticated) {
