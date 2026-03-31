@@ -112,7 +112,10 @@ export default function Products() {
             <button className="px-3 py-1.5 text-sm border rounded-lg hover:bg-gray-50">
               Import
             </button>
-            <button className="px-3 py-1.5 text-sm bg-black text-white rounded-lg hover:bg-gray-800 flex items-center gap-1">
+            <button 
+              onClick={() => window.location.href = '/admin/product-edit/'}
+              className="px-3 py-1.5 text-sm bg-black text-white rounded-lg hover:bg-gray-800 flex items-center gap-1"
+            >
               <Plus size={16} />
               Create
             </button>

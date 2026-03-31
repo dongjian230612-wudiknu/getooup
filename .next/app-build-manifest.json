@@ -50,19 +50,19 @@
       "static/chunks/main-app-59d69f4a4b281bb7.js",
       "static/chunks/app/admin/layout-b56af94385ad18da.js"
     ],
-    "/admin/dashboard/page": [
-      "static/chunks/webpack-616e068a201ad621.js",
-      "static/chunks/fd9d1056-9e075b64004453d8.js",
-      "static/chunks/117-4e7593576fd7f596.js",
-      "static/chunks/main-app-59d69f4a4b281bb7.js",
-      "static/chunks/app/admin/dashboard/page-6379752befe15671.js"
-    ],
     "/admin/lens/page": [
       "static/chunks/webpack-616e068a201ad621.js",
       "static/chunks/fd9d1056-9e075b64004453d8.js",
       "static/chunks/117-4e7593576fd7f596.js",
       "static/chunks/main-app-59d69f4a4b281bb7.js",
       "static/chunks/app/admin/lens/page-2460ab70239f552e.js"
+    ],
+    "/admin/dashboard/page": [
+      "static/chunks/webpack-616e068a201ad621.js",
+      "static/chunks/fd9d1056-9e075b64004453d8.js",
+      "static/chunks/117-4e7593576fd7f596.js",
+      "static/chunks/main-app-59d69f4a4b281bb7.js",
+      "static/chunks/app/admin/dashboard/page-6379752befe15671.js"
     ],
     "/admin/orders/detail/page": [
       "static/chunks/webpack-616e068a201ad621.js",
@@ -78,6 +78,13 @@
       "static/chunks/main-app-59d69f4a4b281bb7.js",
       "static/chunks/app/admin/orders/page-6b495c6d53f661d2.js"
     ],
+    "/admin/page": [
+      "static/chunks/webpack-616e068a201ad621.js",
+      "static/chunks/fd9d1056-9e075b64004453d8.js",
+      "static/chunks/117-4e7593576fd7f596.js",
+      "static/chunks/main-app-59d69f4a4b281bb7.js",
+      "static/chunks/app/admin/page-df586bbcacf4113a.js"
+    ],
     "/admin/product-edit/page": [
       "static/chunks/webpack-616e068a201ad621.js",
       "static/chunks/fd9d1056-9e075b64004453d8.js",
@@ -90,14 +97,7 @@
       "static/chunks/fd9d1056-9e075b64004453d8.js",
       "static/chunks/117-4e7593576fd7f596.js",
       "static/chunks/main-app-59d69f4a4b281bb7.js",
-      "static/chunks/app/admin/products/page-dc58413a05007e88.js"
-    ],
-    "/admin/page": [
-      "static/chunks/webpack-616e068a201ad621.js",
-      "static/chunks/fd9d1056-9e075b64004453d8.js",
-      "static/chunks/117-4e7593576fd7f596.js",
-      "static/chunks/main-app-59d69f4a4b281bb7.js",
-      "static/chunks/app/admin/page-df586bbcacf4113a.js"
+      "static/chunks/app/admin/products/page-a5a60c253fe630a4.js"
     ],
     "/admin/settings/page": [
       "static/chunks/webpack-616e068a201ad621.js",
