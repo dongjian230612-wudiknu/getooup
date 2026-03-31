@@ -104,26 +104,27 @@ export default function Home() {
       )}
 
       {/* Hero */}
-      <section className="relative h-[70vh] bg-black overflow-hidden">
+      <section className="relative h-[70vh] bg-gray-100 overflow-hidden">
         <div className="container mx-auto h-full flex items-center">
           {/* 左侧文字 */}
-          <div className="relative z-10 w-full md:w-1/2 px-4 md:px-8">
-            <div className="text-white">
-              <h1 className="text-5xl md:text-6xl font-light mb-2 drop-shadow-lg">Better Lenses</h1>
-              <h1 className="text-5xl md:text-6xl font-light mb-6 drop-shadow-lg">Better Price</h1>
-              <p className="text-lg tracking-wide drop-shadow">Welcome to try it on</p>
+          <div className="relative z-10 w-full md:w-1/2 px-4 md:px-12">
+            <div className="text-black">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-medium mb-2">Better Lenses</h1>
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-medium mb-6">Better Price</h1>
+              <p className="text-lg text-gray-600 mb-8">Welcome to try it on</p>
+              <a href="#standard" className="inline-block bg-black text-white px-8 py-3 rounded hover:bg-gray-800 transition-colors">
+                View More
+              </a>
             </div>
           </div>
           
-          {/* 右侧图片 - 缩小并居中 */}
+          {/* 右侧图片 - 占满右半边 */}
           <div className="hidden md:block absolute right-0 top-0 h-full w-1/2">
-            <div className="h-full flex items-center justify-center p-8">
-              <img 
-                src="/images/hero-model.png" 
-                alt="Hero" 
-                className="max-h-[80%] max-w-[90%] object-contain rounded-lg shadow-2xl"
-              />
-            </div>
+            <img 
+              src="/images/hero-model.png" 
+              alt="Hero" 
+              className="w-full h-full object-cover object-center"
+            />
           </div>
         </div>
         
@@ -132,9 +133,9 @@ export default function Home() {
           <img 
             src="/images/hero-model.png" 
             alt="Hero" 
-            className="w-full h-full object-cover opacity-40"
+            className="w-full h-full object-cover opacity-30"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-gray-100/80 to-transparent" />
         </div>
       </section>
 
