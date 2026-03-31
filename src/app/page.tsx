@@ -85,6 +85,8 @@ export default function Home() {
     genders: [] as string[],
     priceRange: null as string | null,
     materials: [] as string[],
+    bestSellers: false,
+    newArrivals: false,
   });
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [selectedColor, setSelectedColor] = useState('');
@@ -390,7 +392,7 @@ export default function Home() {
                 <div className="text-center py-12">
                   <p className="text-gray-500 mb-4">No products match your filters</p>
                   <button
-                    onClick={() => setFilters({ shapes: [], colors: [], genders: [], priceRange: null, materials: [] })}
+                    onClick={() => setFilters({ shapes: [], colors: [], genders: [], priceRange: null, materials: [], bestSellers: false, newArrivals: false })}
                     className="text-black underline"
                   >
                     Clear all filters

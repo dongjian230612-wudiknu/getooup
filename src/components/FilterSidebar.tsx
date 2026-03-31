@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { X, ChevronDown } from 'lucide-react';
+import { X, Minus } from 'lucide-react';
 
 interface FilterState {
   shapes: string[];
@@ -9,6 +9,8 @@ interface FilterState {
   genders: string[];
   priceRange: string | null;
   materials: string[];
+  bestSellers: boolean;
+  newArrivals: boolean;
 }
 
 interface FilterSidebarProps {
@@ -18,43 +20,59 @@ interface FilterSidebarProps {
   onFilterChange: (filters: FilterState) => void;
 }
 
-const filterOptions = {
+const filterData = {
+  shopBy: [
+    { id: 'bestSellers', label: 'Best Sellers', count: 12 },
+    { id: 'newArrivals', label: 'New Arrivals', count: 8 },
+  ],
+  frameWidth: [
+    { id: 'wide', label: 'Wide (140mm+)', count: 4 },
+    { id: 'medium', label: 'Medium (135-139mm)', count: 6 },
+    { id: 'narrow', label: 'Narrow (129mm and below)', count: 3 },
+  ],
   shapes: [
-    { id: 'rectangle', label: 'Rectangle', icon: '▭' },
-    { id: 'round', label: 'Round', icon: '○' },
-    { id: 'cat-eye', label: 'Cat Eye', icon: '◠' },
-    { id: 'oval', label: 'Oval', icon: '⬭' },
-    { id: 'square', label: 'Square', icon: '□' },
+    { id: 'rectangle', label: 'Rectangle', icon: '⬭', count: 8 },
+    { id: 'oval', label: 'Oval', icon: '⬯', count: 5 },
+    { id: 'aviator', label: 'Aviator', icon: '🕶', count: 3 },
+    { id: 'square', label: 'Square', icon: '⬜', count: 6 },
+    { id: 'round', label: 'Round', icon: '⭕', count: 7 },
+    { id: 'cat-eye', label: 'Cat-eye', icon: '◠', count: 4 },
+  ],
+  rim: [
+    { id: 'full-rim', label: 'Full-Rim', icon: '⬭', count: 15 },
+    { id: 'semi-rimless', label: 'Semi-Rimless', icon: '◡', count: 8 },
+    { id: 'rimless', label: 'Rimless', icon: '○', count: 3 },
+  ],
+  prices: [
+    { id: '49', label: '$49 frames', count: 10 },
+    { id: '69', label: '$69 frames', count: 8 },
+    { id: '89', label: '$89 frames', count: 5 },
   ],
   colors: [
     { id: 'black', label: 'Black', color: '#000000' },
+    { id: 'grey', label: 'Grey', color: '#808080' },
     { id: 'brown', label: 'Brown', color: '#8B4513' },
     { id: 'tortoise', label: 'Tortoise', color: '#D2691E' },
-    { id: 'clear', label: 'Clear', color: '#E0E0E0' },
     { id: 'gold', label: 'Gold', color: '#FFD700' },
     { id: 'silver', label: 'Silver', color: '#C0C0C0' },
-  ],
-  genders: [
-    { id: 'unisex', label: 'Unisex' },
-    { id: 'women', label: 'Women' },
-    { id: 'men', label: 'Men' },
-  ],
-  priceRanges: [
-    { id: 'under50', label: 'Under $50' },
-    { id: '50-100', label: '$50 - $100' },
-    { id: '100-200', label: '$100 - $200' },
-    { id: 'over200', label: 'Over $200' },
+    { id: 'blue', label: 'Blue', color: '#4169E1' },
+    { id: 'red', label: 'Red', color: '#DC143C' },
+    { id: 'pink', label: 'Pink', color: '#FFB6C1' },
+    { id: 'clear', label: 'Clear', color: '#E8E8E8' },
   ],
   materials: [
-    { id: 'acetate', label: 'Acetate' },
-    { id: 'metal', label: 'Metal' },
-    { id: 'titanium', label: 'Titanium' },
-    { id: 'tr90', label: 'TR90' },
+    { id: 'acetate', label: 'Acetate', count: 12 },
+    { id: 'tr90', label: 'TR90', count: 6 },
+    { id: 'metal', label: 'Metal', count: 8 },
+    { id: 'titanium', label: 'Titanium', count: 4 },
+    { id: 'mixed', label: 'Mixed', count: 3 },
   ],
 };
 
 export default function FilterSidebar({ isOpen, onClose, filters, onFilterChange }: FilterSidebarProps) {
-  const [expanded, setExpanded] = useState<string[]>(['shapes', 'colors', 'price']);
+  const [expanded, setExpanded] = useState<string[]>([
+    'shopBy', 'frameWidth', 'shapes', 'rim', 'prices', 'colors', 'materials'
+  ]);
 
   const toggleSection = (section: string) => {
     setExpanded(prev => 
@@ -64,16 +82,20 @@ export default function FilterSidebar({ isOpen, onClose, filters, onFilterChange
     );
   };
 
-  const toggleFilter = (category: keyof FilterState, value: string) => {
-    const current = filters[category] as string[];
+  const toggleArrayFilter = (key: keyof FilterState, value: string) => {
+    const current = (filters[key] as string[]) || [];
     const updated = current.includes(value)
       ? current.filter(v => v !== value)
       : [...current, value];
-    onFilterChange({ ...filters, [category]: updated });
+    onFilterChange({ ...filters, [key]: updated });
   };
 
-  const setPriceRange = (value: string | null) => {
+  const setPrice = (value: string | null) => {
     onFilterChange({ ...filters, priceRange: value });
+  };
+
+  const toggleBoolean = (key: 'bestSellers' | 'newArrivals') => {
+    onFilterChange({ ...filters, [key]: !filters[key] });
   };
 
   const clearAll = () => {
@@ -83,15 +105,33 @@ export default function FilterSidebar({ isOpen, onClose, filters, onFilterChange
       genders: [],
       priceRange: null,
       materials: [],
+      bestSellers: false,
+      newArrivals: false,
     });
   };
 
-  const totalFilters = 
-    filters.shapes.length + 
-    filters.colors.length + 
-    filters.genders.length + 
-    (filters.priceRange ? 1 : 0) + 
-    filters.materials.length;
+  const getTotalFilters = () => {
+    return filters.shapes.length + 
+      filters.colors.length + 
+      filters.materials.length +
+      (filters.priceRange ? 1 : 0) +
+      (filters.bestSellers ? 1 : 0) +
+      (filters.newArrivals ? 1 : 0);
+  };
+
+  const totalFilters = getTotalFilters();
+
+  const SectionHeader = ({ title, count, section }: { title: string; count: number; section: string }) => (
+    <button
+      onClick={() => toggleSection(section)}
+      className="w-full flex justify-between items-center py-3 border-b border-gray-200"
+    >
+      <span className="font-medium text-sm">
+        {title} <sup className="text-gray-400">(+{count})</sup>
+      </span>
+      <Minus size={14} className="text-gray-400" />
+    </button>
+  );
 
   return (
     <>
@@ -111,154 +151,108 @@ export default function FilterSidebar({ isOpen, onClose, filters, onFilterChange
       `}>
         {/* Header */}
         <div className="sticky top-0 bg-white z-10 p-4 border-b flex justify-between items-center">
-          <div>
-            <h2 className="text-lg font-medium">Filters</h2>
-            {totalFilters > 0 && (
-              <span className="text-sm text-gray-500">{totalFilters} selected</span>
-            )}
-          </div>
           <div className="flex items-center gap-2">
+            <h2 className="text-base font-medium">Shop by</h2>
             {totalFilters > 0 && (
-              <button 
-                onClick={clearAll}
-                className="text-sm text-gray-500 hover:text-black"
-              >
-                Clear
-              </button>
+              <sup className="text-gray-400 text-xs">(+{totalFilters})</sup>
             )}
-            <button onClick={onClose} className="lg:hidden p-1">
-              <X size={20} />
-            </button>
           </div>
+          <button onClick={onClose} className="lg:hidden">
+            <X size={18} />
+          </button>
         </div>
 
-        <div className="p-4 space-y-6">
-          {/* Shapes */}
+        <div className="p-4 space-y-1">
+          {/* Shop By */}
           <div>
-            <button 
-              onClick={() => toggleSection('shapes')}
-              className="w-full flex justify-between items-center py-2 font-medium"
-            >
-              Frame Shapes
-              <ChevronDown 
-                size={16} 
-                className={`transition-transform ${expanded.includes('shapes') ? '' : '-rotate-90'}`}
-              />
-            </button>
-            {expanded.includes('shapes') && (
-              <div className="grid grid-cols-2 gap-2 mt-2">
-                {filterOptions.shapes.map(shape => (
-                  <button
-                    key={shape.id}
-                    onClick={() => toggleFilter('shapes', shape.id)}
-                    className={`
-                      flex flex-col items-center p-3 border rounded-lg text-sm
-                      ${filters.shapes.includes(shape.id) 
-                        ? 'border-black bg-black text-white' 
-                        : 'border-gray-200 hover:border-gray-400'}
-                    `}
-                  >
-                    <span className="text-xl mb-1">{shape.icon}</span>
-                    <span>{shape.label}</span>
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Colors */}
-          <div>
-            <button 
-              onClick={() => toggleSection('colors')}
-              className="w-full flex justify-between items-center py-2 font-medium"
-            >
-              Frame Colors
-              <ChevronDown 
-                size={16} 
-                className={`transition-transform ${expanded.includes('colors') ? '' : '-rotate-90'}`}
-              />
-            </button>
-            {expanded.includes('colors') && (
-              <div className="grid grid-cols-3 gap-2 mt-2">
-                {filterOptions.colors.map(color => (
-                  <button
-                    key={color.id}
-                    onClick={() => toggleFilter('colors', color.id)}
-                    className={`
-                      flex flex-col items-center p-2 rounded-lg text-sm
-                      ${filters.colors.includes(color.id) 
-                        ? 'ring-2 ring-black' 
-                        : 'hover:bg-gray-50'}
-                    `}
-                  >
-                    <span 
-                      className="w-8 h-8 rounded-full border border-gray-200 mb-1"
-                      style={{ backgroundColor: color.color }}
-                    />
-                    <span className="text-xs">{color.label}</span>
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Gender */}
-          <div>
-            <button 
-              onClick={() => toggleSection('gender')}
-              className="w-full flex justify-between items-center py-2 font-medium"
-            >
-              Gender
-              <ChevronDown 
-                size={16} 
-                className={`transition-transform ${expanded.includes('gender') ? '' : '-rotate-90'}`}
-              />
-            </button>
-            {expanded.includes('gender') && (
-              <div className="space-y-2 mt-2">
-                {filterOptions.genders.map(gender => (
-                  <label 
-                    key={gender.id}
-                    className="flex items-center gap-3 cursor-pointer"
-                  >
+            <SectionHeader title="Shop by" count={2} section="shopBy" />
+            {expanded.includes('shopBy') && (
+              <div className="py-3 space-y-2">
+                {filterData.shopBy.map(item => (
+                  <label key={item.id} className="flex items-center gap-3 cursor-pointer text-sm">
                     <input
                       type="checkbox"
-                      checked={filters.genders.includes(gender.id)}
-                      onChange={() => toggleFilter('genders', gender.id)}
+                      checked={filters[item.id as keyof FilterState] as boolean}
+                      onChange={() => toggleBoolean(item.id as 'bestSellers' | 'newArrivals')}
                       className="w-4 h-4 rounded border-gray-300"
                     />
-                    <span>{gender.label}</span>
+                    <span>{item.label}</span>
                   </label>
                 ))}
               </div>
             )}
           </div>
 
-          {/* Price Range */}
+          {/* Frame Width */}
           <div>
-            <button 
-              onClick={() => toggleSection('price')}
-              className="w-full flex justify-between items-center py-2 font-medium"
-            >
-              Price Range
-              <ChevronDown 
-                size={16} 
-                className={`transition-transform ${expanded.includes('price') ? '' : '-rotate-90'}`}
-              />
-            </button>
-            {expanded.includes('price') && (
-              <div className="space-y-2 mt-2">
-                {filterOptions.priceRanges.map(price => (
-                  <label 
-                    key={price.id}
-                    className="flex items-center gap-3 cursor-pointer"
-                  >
+            <SectionHeader title="Frame Width" count={filterData.frameWidth.length} section="frameWidth" />
+            {expanded.includes('frameWidth') && (
+              <div className="py-3 space-y-2">
+                {filterData.frameWidth.map(item => (
+                  <label key={item.id} className="flex items-center gap-3 cursor-pointer text-sm">
                     <input
-                      type="radio"
-                      name="priceRange"
+                      type="checkbox"
+                      className="w-4 h-4 rounded border-gray-300"
+                    />
+                    <span>{item.label}</span>
+                  </label>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Shape */}
+          <div>
+            <SectionHeader title="Shape" count={filterData.shapes.length} section="shapes" />
+            {expanded.includes('shapes') && (
+              <div className="py-3 space-y-2">
+                {filterData.shapes.map(shape => (
+                  <label key={shape.id} className="flex items-center gap-3 cursor-pointer text-sm">
+                    <input
+                      type="checkbox"
+                      checked={filters.shapes.includes(shape.id)}
+                      onChange={() => toggleArrayFilter('shapes', shape.id)}
+                      className="w-4 h-4 rounded border-gray-300"
+                    />
+                    <span className="text-gray-600">{shape.icon}</span>
+                    <span>{shape.label}</span>
+                  </label>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Rim */}
+          <div>
+            <SectionHeader title="Rim" count={filterData.rim.length} section="rim" />
+            {expanded.includes('rim') && (
+              <div className="py-3 space-y-2">
+                {filterData.rim.map(item => (
+                  <label key={item.id} className="flex items-center gap-3 cursor-pointer text-sm">
+                    <input
+                      type="checkbox"
+                      className="w-4 h-4 rounded border-gray-300"
+                    />
+                    <span className="text-gray-600">{item.icon}</span>
+                    <span>{item.label}</span>
+                  </label>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Frame Price */}
+          <div>
+            <SectionHeader title="Frame price" count={filterData.prices.length} section="prices" />
+            {expanded.includes('prices') && (
+              <div className="py-3 space-y-2">
+                {filterData.prices.map(price => (
+                  <label key={price.id} className="flex items-center gap-3 cursor-pointer text-sm">
+                    <input
+                      type="checkbox"
                       checked={filters.priceRange === price.id}
-                      onChange={() => setPriceRange(price.id)}
-                      className="w-4 h-4"
+                      onChange={() => setPrice(filters.priceRange === price.id ? null : price.id)}
+                      className="w-4 h-4 rounded border-gray-300"
                     />
                     <span>{price.label}</span>
                   </label>
@@ -267,37 +261,60 @@ export default function FilterSidebar({ isOpen, onClose, filters, onFilterChange
             )}
           </div>
 
-          {/* Materials */}
+          {/* Color */}
           <div>
-            <button 
-              onClick={() => toggleSection('materials')}
-              className="w-full flex justify-between items-center py-2 font-medium"
-            >
-              Materials
-              <ChevronDown 
-                size={16} 
-                className={`transition-transform ${expanded.includes('materials') ? '' : '-rotate-90'}`}
-              />
-            </button>
+            <SectionHeader title="Color" count={filterData.colors.length} section="colors" />
+            {expanded.includes('colors') && (
+              <div className="py-3">
+                <div className="grid grid-cols-5 gap-2">
+                  {filterData.colors.map(color => (
+                    <button
+                      key={color.id}
+                      onClick={() => toggleArrayFilter('colors', color.id)}
+                      className={`
+                        w-8 h-8 rounded border-2 transition-all
+                        ${filters.colors.includes(color.id) 
+                          ? 'border-black scale-110' 
+                          : 'border-gray-200 hover:border-gray-400'}
+                      `}
+                      style={{ backgroundColor: color.color }}
+                      title={color.label}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Material */}
+          <div>
+            <SectionHeader title="Material" count={filterData.materials.length} section="materials" />
             {expanded.includes('materials') && (
-              <div className="space-y-2 mt-2">
-                {filterOptions.materials.map(material => (
-                  <label 
-                    key={material.id}
-                    className="flex items-center gap-3 cursor-pointer"
-                  >
+              <div className="py-3 space-y-2">
+                {filterData.materials.map(item => (
+                  <label key={item.id} className="flex items-center gap-3 cursor-pointer text-sm">
                     <input
                       type="checkbox"
-                      checked={filters.materials.includes(material.id)}
-                      onChange={() => toggleFilter('materials', material.id)}
+                      checked={filters.materials.includes(item.id)}
+                      onChange={() => toggleArrayFilter('materials', item.id)}
                       className="w-4 h-4 rounded border-gray-300"
                     />
-                    <span>{material.label}</span>
+                    <span>{item.label}</span>
                   </label>
                 ))}
               </div>
             )}
           </div>
+
+          {/* Clear Button */}
+          {totalFilters > 0 && (
+            <button
+              onClick={clearAll}
+              className="w-full mt-6 py-3 border border-gray-300 rounded text-sm hover:border-black transition-colors"
+            >
+              Clear ({totalFilters})
+            </button>
+          )}
         </div>
       </aside>
     </>
