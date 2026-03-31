@@ -375,64 +375,145 @@ export default function Home() {
 }
 
 // Product Modal Component
+// Product Modal Component - Multioo Style
 function ProductModal({ product, selectedColor, setSelectedColor, selectedLens, setSelectedLens, prescription, setPrescription, step, setStep, errors, onClose, onAddToCart }: any) {
   const [selectedHighIndex, setSelectedHighIndex] = useState('1.60');
   const [isProgressive, setIsProgressive] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(0);
+  const [showLensOptions, setShowLensOptions] = useState(false);
 
   const total = product.price + (selectedLens?.price || 0) + (selectedHighIndex === '1.67' ? 40 : selectedHighIndex === '1.74' ? 80 : 0) + (isProgressive ? 80 : 0);
+  
+  const productImages = product.images || [product.image];
+
+  const handleFrameOnly = () => {
+    setSelectedLens(lensOptions[0]); // Classic Clear
+    setStep(3);
+  };
+
+  const handleSelectLenses = () => {
+    setShowLensOptions(true);
+  };
 
   return (
     <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-auto">
+      <div className="bg-white rounded-lg max-w-5xl w-full max-h-[90vh] overflow-auto">
         <div className="p-4 flex justify-between items-center border-b">
-          <h3 className="font-medium">{product.name}</h3>
-          <button onClick={onClose}><X size={20} /></button>
+          <div className="text-sm text-gray-500">
+            Home / {product.category === 'asiafit' ? 'AsiaFit' : 'Standard'} / {product.id.toUpperCase()}
+          </div>
+          <button onClick={onClose} className="p-1 hover:bg-gray-100 rounded"><X size={20} /></button>
         </div>
         
         <div className="md:flex">
           {/* 左侧产品图片 */}
-          <div className="md:w-1/2 bg-gray-50 flex flex-col">
-            <div className="aspect-square flex items-center justify-center p-8 flex-1">
-              <img src={product.image} alt={product.name} className="max-w-full max-h-full object-contain" />
-            </div>
-            <div className="p-6 text-center border-t bg-white">
-              <p className="text-sm text-gray-500 mb-2">{product.description}</p>
-              <p className="text-3xl font-medium">${product.price}</p>
+          <div className="md:w-3/5 bg-white p-6">
+            {/* 缩略图 + 主图布局 */}
+            <div className="flex gap-4">
+              {/* 左侧缩略图 */}
+              <div className="w-20 flex flex-col gap-2">
+                {productImages.map((img: string, idx: number) => (
+                  <button
+                    key={idx}
+                    onClick={() => setSelectedImage(idx)}
+                    className={`w-16 h-16 border-2 rounded overflow-hidden ${selectedImage === idx ? 'border-blue-500' : 'border-gray-200'}`}
+                  >
+                    <img src={img} alt={`${product.name} ${idx + 1}`} className="w-full h-full object-cover" />
+                  </button>
+                ))}
+              </div>
+              
+              {/* 主图 */}
+              <div className="flex-1 relative">
+                <div className="aspect-square flex items-center justify-center bg-gray-50 rounded-lg">
+                  <img 
+                    src={productImages[selectedImage]} 
+                    alt={product.name} 
+                    className="max-w-full max-h-full object-contain"
+                  />
+                </div>
+                
+                {/* AR / AI Try-On 按钮 */}
+                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+                  <button className="bg-white border border-gray-300 px-4 py-2 rounded-full text-sm flex items-center gap-2 shadow-sm">
+                    <span>👓</span> AR Try-On
+                  </button>
+                  <button className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-full text-sm flex items-center gap-2 shadow-sm">
+                    <span>✨</span> AI Try-On
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
           
-          {/* 右侧选项 */}
-          <div className="md:w-1/2">
-            {step === 1 && (
-              <div className="p-6">
-                <p className="text-sm text-gray-500 mb-4">Step 1: Choose Color</p>
-                <div className="space-y-2 mb-6">
-                  {product.colors.map((color: string) => (
-                    <button key={color} onClick={() => setSelectedColor(color)} 
-                      className={`w-full p-3 border rounded-lg text-sm text-left flex items-center gap-3 ${selectedColor === color ? 'border-black bg-gray-50' : ''}`}>
-                      <span className="w-6 h-6 rounded-full border border-gray-300" style={{ backgroundColor: getColorHex(color) }} />
-                      {color}
-                    </button>
-                  ))}
+          {/* 右侧产品信息 */}
+          <div className="md:w-2/5 p-6 border-l">
+            {!showLensOptions ? (
+              <div>
+                <h2 className="text-2xl font-medium mb-1">{product.name}</h2>
+                <p className="text-gray-600 mb-4">Starting at ${product.price}.00 with prescription lens</p>
+                
+                <div className="space-y-2 text-sm text-gray-600 mb-6">
+                  <div>Material: {product.material || 'Acetate'}</div>
+                  <div>Weight: {product.weight || '20g'}</div>
                 </div>
-                <button onClick={() => setStep(2)} className="w-full bg-black text-white py-3 rounded-full">Continue to Lenses</button>
+                
+                <hr className="my-6" />
+                
+                {/* 颜色选择 */}
+                <div className="mb-6">
+                  <div className="flex gap-2 mb-3">
+                    {product.colors.map((color: string, idx: number) => (
+                      <button
+                        key={color}
+                        onClick={() => {
+                          setSelectedColor(color);
+                          setSelectedImage(idx % productImages.length);
+                        }}
+                        className={`w-10 h-10 rounded border-2 overflow-hidden ${selectedColor === color ? 'border-black' : 'border-gray-200'}`}
+                        title={color}
+                      >
+                        <div className="w-full h-full" style={{ backgroundColor: getColorHex(color) }} />
+                      </button>
+                    ))}
+                  </div>
+                  <p className="text-sm text-gray-600">{selectedColor}</p>
+                </div>
+                
+                {/* 按钮组 */}
+                <div className="space-y-3">
+                  <button 
+                    onClick={handleFrameOnly}
+                    className="w-full border-2 border-gray-300 py-3 rounded font-medium hover:border-black transition-colors"
+                  >
+                    Frame Only
+                  </button>
+                  
+                  <button 
+                    onClick={handleSelectLenses}
+                    className="w-full bg-black text-white py-3 rounded font-medium hover:bg-gray-800 transition-colors"
+                  >
+                    Select Lenses
+                  </button>
+                </div>
               </div>
-            )}
-
-            {step === 2 && (
-              <div className="p-6">
-                <button onClick={() => setStep(1)} className="text-sm text-gray-500 mb-4">← Back</button>
-                <p className="text-sm text-gray-500 mb-4">Step 2: Choose Lenses</p>
+            ) : (
+              <div>
+                <button onClick={() => setShowLensOptions(false)} className="text-sm text-gray-500 mb-4">← Back to Frame</button>
+                <h3 className="font-medium mb-4">Choose Your Lenses</h3>
                 
                 <div className="space-y-3 mb-6">
                   {lensOptions.map((lens: LensOption) => (
-                    <div key={lens.id} onClick={() => setSelectedLens(lens)} 
-                      className={`p-4 border rounded-lg cursor-pointer ${selectedLens?.id === lens.id ? 'border-black' : ''}`}>
-                      <div className="flex justify-between">
+                    <div 
+                      key={lens.id} 
+                      onClick={() => setSelectedLens(lens)} 
+                      className={`p-4 border-2 rounded-lg cursor-pointer ${selectedLens?.id === lens.id ? 'border-black' : 'border-gray-200'}`}
+                    >
+                      <div className="flex justify-between mb-1">
                         <span className="font-medium">{lens.name}</span>
-                        <span>{lens.price === 0 ? 'Free' : `+$${lens.price}`}</span>
+                        <span className="text-gray-600">{lens.price === 0 ? 'Free' : `+$${lens.price}`}</span>
                       </div>
-                      <p className="text-sm text-gray-500 mt-1">{lens.description}</p>
+                      <p className="text-xs text-gray-500">{lens.description}</p>
                     </div>
                   ))}
                 </div>
@@ -443,7 +524,7 @@ function ProductModal({ product, selectedColor, setSelectedColor, selectedLens, 
                     {['1.60', '1.67', '1.74'].map((idx) => (
                       <label key={idx} className="flex items-center gap-3 p-3 border rounded cursor-pointer">
                         <input type="radio" name="index" checked={selectedHighIndex === idx} onChange={() => setSelectedHighIndex(idx)} />
-                        <span>{idx === '1.60' ? '1.60 Mid-Index' : idx === '1.67' ? '1.67 High-Index (+$40)' : '1.74 Ultra High-Index (+$80)'}</span>
+                        <span className="text-sm">{idx === '1.60' ? '1.60 Mid-Index' : idx === '1.67' ? '1.67 High-Index (+$40)' : '1.74 Ultra High-Index (+$80)'}</span>
                       </label>
                     ))}
                   </div>
@@ -451,17 +532,27 @@ function ProductModal({ product, selectedColor, setSelectedColor, selectedLens, 
 
                 <label className="flex items-center gap-3 p-3 border rounded cursor-pointer mb-6">
                   <input type="checkbox" checked={isProgressive} onChange={(e) => setIsProgressive(e.target.checked)} />
-                  <span>Progressive Lenses (+$80)</span>
+                  <span className="text-sm">Progressive Lenses (+$80)</span>
                 </label>
 
-                <button onClick={() => setStep(3)} disabled={!selectedLens} className="w-full bg-black text-white py-3 rounded-full disabled:bg-gray-300">Continue to Prescription</button>
+                <div className="flex gap-3">
+                  <button onClick={() => setShowLensOptions(false)} className="flex-1 border-2 border-gray-300 py-3 rounded">Back</button>
+                  <button 
+                    onClick={() => setStep(3)} 
+                    disabled={!selectedLens} 
+                    className="flex-1 bg-black text-white py-3 rounded disabled:bg-gray-300"
+                  >
+                    Continue
+                  </button>
+                </div>
               </div>
             )}
 
+            {/* 第三步：输入处方 */}
             {step === 3 && (
-              <div className="p-6">
-                <button onClick={() => setStep(2)} className="text-sm text-gray-500 mb-4">← Back</button>
-                <p className="text-sm text-gray-500 mb-4">Step 3: Enter Prescription</p>
+              <div className="mt-6 border-t pt-6">
+                <button onClick={() => setStep(1)} className="text-sm text-gray-500 mb-4">← Back</button>
+                <p className="font-medium mb-4">Enter Your Prescription</p>
                 
                 {errors.length > 0 && (
                   <div className="bg-red-50 p-4 rounded mb-4 text-red-600 text-sm">
@@ -471,13 +562,13 @@ function ProductModal({ product, selectedColor, setSelectedColor, selectedLens, 
 
                 <div className="grid grid-cols-2 gap-4 mb-4">
                   <div>
-                    <p className="font-medium mb-2">Right Eye (OD)</p>
+                    <p className="font-medium mb-2 text-sm">Right Eye (OD)</p>
                     <input placeholder="Sphere" className="w-full border p-2 rounded mb-2 text-sm" value={prescription.rightSphere} onChange={(e) => setPrescription({...prescription, rightSphere: e.target.value})} />
                     <input placeholder="Cylinder" className="w-full border p-2 rounded mb-2 text-sm" value={prescription.rightCylinder} onChange={(e) => setPrescription({...prescription, rightCylinder: e.target.value})} />
                     <input placeholder="Axis" className="w-full border p-2 rounded text-sm" value={prescription.rightAxis} onChange={(e) => setPrescription({...prescription, rightAxis: e.target.value})} />
                   </div>
                   <div>
-                    <p className="font-medium mb-2">Left Eye (OS)</p>
+                    <p className="font-medium mb-2 text-sm">Left Eye (OS)</p>
                     <input placeholder="Sphere" className="w-full border p-2 rounded mb-2 text-sm" value={prescription.leftSphere} onChange={(e) => setPrescription({...prescription, leftSphere: e.target.value})} />
                     <input placeholder="Cylinder" className="w-full border p-2 rounded mb-2 text-sm" value={prescription.leftCylinder} onChange={(e) => setPrescription({...prescription, leftCylinder: e.target.value})} />
                     <input placeholder="Axis" className="w-full border p-2 rounded text-sm" value={prescription.leftAxis} onChange={(e) => setPrescription({...prescription, leftAxis: e.target.value})} />
@@ -485,11 +576,10 @@ function ProductModal({ product, selectedColor, setSelectedColor, selectedLens, 
                 </div>
 
                 <input placeholder="PD (Pupillary Distance)" className="w-full border p-2 rounded mb-4 text-sm" value={prescription.pd} onChange={(e) => setPrescription({...prescription, pd: e.target.value})} />
-                {isProgressive && <input placeholder="ADD" className="w-full border p-2 rounded mb-4 text-sm" value={prescription.add} onChange={(e) => setPrescription({...prescription, add: e.target.value})} />}
-
+                
                 <div className="flex justify-between items-center pt-4 border-t">
                   <span className="text-xl font-medium">Total: ${total}</span>
-                  <button onClick={onAddToCart} className="bg-black text-white px-8 py-3 rounded-full">Add to Cart</button>
+                  <button onClick={onAddToCart} className="bg-black text-white px-8 py-3 rounded">Add to Cart</button>
                 </div>
               </div>
             )}
@@ -505,11 +595,12 @@ function CartSidebar({ cart, onClose, total }: { cart: CartItem[], onClose: () =
   return (
     <div className="fixed inset-0 z-50 flex justify-end">
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-      <div className="relative bg-white w-full max-w-md h-full overflow-auto">
+      <div className="relative w-full max-w-md bg-white h-full shadow-xl">
         <div className="p-4 border-b flex justify-between items-center">
           <h2 className="font-medium">Cart ({cart.length})</h2>
           <button onClick={onClose}><X size={20} /></button>
         </div>
+        
         <div className="p-4">
           {cart.length === 0 ? (
             <p className="text-center text-gray-500 py-8">Your cart is empty</p>
@@ -524,6 +615,7 @@ function CartSidebar({ cart, onClose, total }: { cart: CartItem[], onClose: () =
                   <p className="text-sm text-gray-500">{item.color} / {item.lens.name}</p>
                 </div>
               ))}
+              
               <div className="pt-4">
                 <div className="flex justify-between text-xl font-medium mb-4">
                   <span>Total</span>

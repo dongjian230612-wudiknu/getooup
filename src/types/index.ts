@@ -5,8 +5,11 @@ export interface Product {
   description: string;
   colors: string[];
   image: string;
+  images?: string[];
   category: 'standard' | 'asiafit';
   bestSeller?: boolean;
+  material?: string;
+  weight?: string;
 }
 
 export interface LensOption {
