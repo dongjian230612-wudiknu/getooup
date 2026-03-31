@@ -104,14 +104,14 @@ export default function Home() {
       )}
 
       {/* Hero */}
-      <section className="relative h-[70vh] bg-gray-100 overflow-hidden">
+      <section className="relative h-[70vh] overflow-hidden" style={{ background: 'linear-gradient(135deg, #87CEEB 0%, #B0E0E6 50%, #E0F6FF 100%)' }}>
         <div className="container mx-auto h-full flex items-center">
           {/* 左侧文字 */}
           <div className="relative z-10 w-full md:w-1/2 px-4 md:px-12">
             <div className="text-black">
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-medium mb-2">Better Lenses</h1>
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-medium mb-6">Better Price</h1>
-              <p className="text-lg text-gray-600 mb-8">Welcome to try it on</p>
+              <p className="text-lg text-gray-700 mb-8">Welcome to try it on</p>
               <a href="#standard" className="inline-block bg-black text-white px-8 py-3 rounded hover:bg-gray-800 transition-colors">
                 View More
               </a>
@@ -133,9 +133,9 @@ export default function Home() {
           <img 
             src="/images/hero-model.png" 
             alt="Hero" 
-            className="w-full h-full object-cover opacity-30"
+            className="w-full h-full object-cover opacity-40"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-gray-100/80 to-transparent" />
+          <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, rgba(135, 206, 235, 0.8), rgba(224, 246, 255, 0.9))' }} />
         </div>
       </section>
 
