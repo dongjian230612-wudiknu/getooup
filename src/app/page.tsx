@@ -301,6 +301,39 @@ export default function Home() {
             <h2 className="text-3xl font-light mb-4">Real People, Real Style</h2>
             <p className="text-gray-500">Real wearers, captured in everyday moments</p>
           </div>
+          
+          {/* 模特图片网格 */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {[
+              { id: 1, name: "Sarah", style: "DU301 Classic" },
+              { id: 2, name: "Michael", style: "DU302 Modern" },
+              { id: 3, name: "Emma", style: "8096 Rectangle" },
+              { id: 4, name: "David", style: "8095 Round" },
+              { id: 5, name: "Lisa", style: "8097 Cat Eye" },
+              { id: 6, name: "James", style: "OG203 Titanium" },
+              { id: 7, name: "Anna", style: "DU303 Elegant" },
+              { id: 8, name: "Chris", style: "8098 Oval" },
+            ].map((person) => (
+              <div key={person.id} className="group relative aspect-[3/4] bg-gray-100 rounded-lg overflow-hidden">
+                {/* 占位图 - 实际使用时替换为真实模特照片 */}
+                <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200">
+                  <span className="text-4xl mb-2">👤</span>
+                  <span className="text-xs text-gray-400">Model Photo</span>
+                </div>
+                
+                {/* 悬停显示信息 */}
+                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center text-white">
+                  <p className="font-medium">{person.name}</p>
+                  <p className="text-sm text-gray-300">{person.style}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+          
+          {/* 社交媒体标签 */}
+          <div className="text-center mt-8">
+            <p className="text-gray-500 text-sm">Share your style with #GetooupStyle</p>
+          </div>
         </div>
       </section>
 
