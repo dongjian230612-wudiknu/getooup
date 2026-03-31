@@ -154,7 +154,13 @@ const defaultActivities: Activity[] = [
 export default function OrderDetail() {
   const [currentOrder, setCurrentOrder] = useState<OrderData | null>(null);
   
-  const [order, setOrder] = useState(defaultOrder);
+  const [order, setOrder] = useState({
+    id: '#509',
+    date: 'Mar 31, 2026 8:35 AM',
+    channel: 'Default Sales Channel',
+    status: 'captured' as 'captured' | 'pending',
+    fulfillmentStatus: 'fulfilled' as 'fulfilled' | 'awaiting',
+  });
   const [items, setItems] = useState<OrderItem[]>(defaultItems);
   const [prescriptions] = useState<Prescription[]>(defaultPrescriptions);
   const [customer, setCustomer] = useState<Customer>(defaultCustomer);
