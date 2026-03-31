@@ -1,4 +1,14 @@
 {
   "version": 2,
-  "public": true
+  "public": true,
+  "rewrites": [
+    { "source": "/admin", "destination": "/admin/index.html" },
+    { "source": "/admin/dashboard", "destination": "/admin/dashboard/index.html" },
+    { "source": "/admin/orders", "destination": "/admin/orders/index.html" },
+    { "source": "/admin/products", "destination": "/admin/products/index.html" },
+    { "source": "/admin/customers", "destination": "/admin/customers/index.html" },
+    { "source": "/admin/settings", "destination": "/admin/settings/index.html" },
+    { "source": "/checkout", "destination": "/checkout/index.html" },
+    { "source": "/checkout/success", "destination": "/checkout/success/index.html" }
+  ]
 }
