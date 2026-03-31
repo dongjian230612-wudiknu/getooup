@@ -308,25 +308,18 @@ export default function Home() {
               { id: 1, name: "Sarah", style: "DU301 Classic", image: "/images/model-1.png" },
               { id: 2, name: "Michael", style: "DU302 Modern", image: "/images/model-2.jpg" },
               { id: 3, name: "Emma", style: "8096 Rectangle", image: "/images/model-3.jpg" },
-              { id: 4, name: "David", style: "8095 Round", image: "" },
-              { id: 5, name: "Lisa", style: "8097 Cat Eye", image: "" },
-              { id: 6, name: "James", style: "OG203 Titanium", image: "" },
-              { id: 7, name: "Anna", style: "DU303 Elegant", image: "" },
-              { id: 8, name: "Chris", style: "8098 Oval", image: "" },
+              { id: 4, name: "David", style: "8095 Round", image: "/images/model-4.jpg" },
+              { id: 5, name: "Lisa", style: "8097 Cat Eye", image: "/images/model-5.png" },
+              { id: 6, name: "James", style: "OG203 Titanium", image: "/images/model-6.png" },
+              { id: 7, name: "Anna", style: "DU303 Elegant", image: "/images/model-7.jpg" },
+              { id: 8, name: "Chris", style: "8098 Oval", image: "/images/model-8.png" },
             ].map((person) => (
               <div key={person.id} className="group relative aspect-[3/4] bg-gray-100 rounded-lg overflow-hidden">
-                {person.image ? (
-                  <img 
-                    src={person.image} 
-                    alt={`${person.name} wearing ${person.style}`}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                  />
-                ) : (
-                  <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200">
-                    <span className="text-4xl mb-2">👤</span>
-                    <span className="text-xs text-gray-400">Model Photo</span>
-                  </div>
-                )}
+                <img 
+                  src={person.image} 
+                  alt={`${person.name} wearing ${person.style}`}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                />
                 
                 {/* 悬停显示信息 */}
                 <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center text-white">
