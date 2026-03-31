@@ -6,6 +6,7 @@ import { products, lensOptions } from '@/lib/data';
 import { Product, CartItem, Prescription, LensOption } from '@/types';
 import { formatPrice, validatePrescription } from '@/lib/utils';
 import Quiz from '@/components/Quiz';
+import FilterSidebar from '@/components/FilterSidebar';
 
 // 辅助函数：获取颜色对应的十六进制值
 function getColorHex(color: string): string {
@@ -77,6 +78,14 @@ export default function Home() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showQuiz, setShowQuiz] = useState(false);
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [filters, setFilters] = useState({
+    shapes: [] as string[],
+    colors: [] as string[],
+    genders: [] as string[],
+    priceRange: null as string | null,
+    materials: [] as string[],
+  });
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [selectedColor, setSelectedColor] = useState('');
   const [selectedLens, setSelectedLens] = useState<LensOption | null>(null);
@@ -115,6 +124,56 @@ export default function Home() {
     setStep(1);
     setShowModal(true);
   };
+
+  // Filter products based on selected filters
+  const filteredProducts = products.filter(product => {
+    // Shape filter
+    if (filters.shapes.length > 0) {
+      const shapeMap: Record<string, string[]> = {
+        'rectangle': ['8096'],
+        'round': ['8095', '8097'],
+        'cat-eye': ['8097', '8098'],
+        'oval': ['8098', 'du303'],
+        'square': ['8096', 'du301'],
+      };
+      const productShapes = Object.entries(shapeMap)
+        .filter(([_, ids]) => ids.includes(product.id))
+        .map(([shape]) => shape);
+      if (!filters.shapes.some(s => productShapes.includes(s))) return false;
+    }
+
+    // Color filter
+    if (filters.colors.length > 0) {
+      const colorMap: Record<string, string[]> = {
+        'black': ['Black', 'N1黑'],
+        'brown': ['Brown', 'Tea', 'Tortoise'],
+        'tortoise': ['Tortoise', 'Tortoiseshell'],
+        'clear': ['Clear', 'Transparent'],
+        'gold': ['Gold'],
+        'silver': ['Silver'],
+      };
+      const hasColor = filters.colors.some(color => {
+        const mappedColors = colorMap[color] || [color];
+        return product.colors.some(pc => 
+          mappedColors.some(mc => pc.toLowerCase().includes(mc.toLowerCase()))
+        );
+      });
+      if (!hasColor) return false;
+    }
+
+    // Price filter
+    if (filters.priceRange) {
+      const price = product.price;
+      switch (filters.priceRange) {
+        case 'under50': if (price >= 50) return false; break;
+        case '50-100': if (price < 50 || price > 100) return false; break;
+        case '100-200': if (price < 100 || price > 200) return false; break;
+        case 'over200': if (price <= 200) return false; break;
+      }
+    }
+
+    return true;
+  });
 
   return (
     <div className="min-h-screen bg-white">
@@ -244,64 +303,101 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Best Sellers */}
-      <section id="standard" className="py-16 bg-gray-50">
+      {/* Eyeglasses Section with Filters */}
+      <section id="eyeglasses" className="py-16 bg-gray-50">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
+          <div className="text-center mb-8">
             <h2 className="text-3xl font-light mb-4">Browse best selling styles</h2>
             <p className="text-gray-500">Statistics for the last month</p>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-            {products.slice(0, 8).map((product) => (
-              <div key={product.id} className="group cursor-pointer" onClick={() => openProduct(product)}>
-                {/* 产品图片区域 */}
-                <div className="relative aspect-square bg-white rounded-lg overflow-hidden mb-3">
-                  {product.image ? (
-                    <img src={product.image} alt={product.name} className="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform" />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-6xl">👓</div>
+          <div className="flex gap-6">
+            {/* Filter Sidebar */}
+            <FilterSidebar
+              isOpen={isFilterOpen}
+              onClose={() => setIsFilterOpen(false)}
+              filters={filters}
+              onFilterChange={setFilters}
+            />
+
+            <div className="flex-1">
+              {/* Filter Button (Mobile) & Results count */}
+              <div className="flex justify-between items-center mb-6">
+                <button
+                  onClick={() => setIsFilterOpen(true)}
+                  className="lg:hidden flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg"
+                >
+                  <span>Filters</span>
+                  {(filters.shapes.length + filters.colors.length + (filters.priceRange ? 1 : 0)) > 0 && (
+                    <span className="bg-black text-white text-xs px-2 py-0.5 rounded-full">
+                      {filters.shapes.length + filters.colors.length + (filters.priceRange ? 1 : 0)}
+                    </span>
                   )}
-                  
-                  {/* Best Seller 标签 - 左上 */}
-                  {product.bestSeller && (
-                    <div className="absolute top-3 left-3 bg-black text-white px-3 py-1 text-xs rounded">
-                      Best Seller
+                </button>
+                <span className="text-gray-500 text-sm">
+                  {filteredProducts.length} products
+                </span>
+              </div>
+
+              {/* Product Grid */}
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
+                {filteredProducts.map((product) => (
+                  <div key={product.id} className="group cursor-pointer" onClick={() => openProduct(product)}>
+                    {/* 产品图片区域 */}
+                    <div className="relative aspect-square bg-white rounded-lg overflow-hidden mb-3">
+                      {product.image ? (
+                        <img src={product.image} alt={product.name} className="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-6xl">👓</div>
+                      )}
+                      
+                      {/* Best Seller 标签 - 左上 */}
+                      {product.bestSeller && (
+                        <div className="absolute top-3 left-3 bg-black text-white px-3 py-1 text-xs rounded">
+                          Best Seller
+                        </div>
+                      )}
+                      
+                      {/* AR Try-On 按钮 - 底部中央 */}
+                      <button className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-white/95 border border-gray-200 px-4 py-1.5 rounded-full text-xs flex items-center gap-1.5 shadow-sm opacity-0 group-hover:opacity-100 transition-opacity">
+                        <span>📷</span> AR Try-On
+                      </button>
                     </div>
-                  )}
-                  
-                  {/* AR Try-On 按钮 - 底部中央 */}
-                  <button className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-white/95 border border-gray-200 px-4 py-1.5 rounded-full text-xs flex items-center gap-1.5 shadow-sm opacity-0 group-hover:opacity-100 transition-opacity">
-                    <span>📷</span> AR Try-On
+                    
+                    {/* 产品信息 */}
+                    <div className="px-1">
+                      <h3 className="font-medium text-lg mb-1">{product.name}</h3>
+                      <p className="font-medium mb-2">${product.price}</p>
+                      
+                      {/* 颜色选择器 - 小方块 */}
+                      <div className="flex gap-1.5">
+                        {product.colors.slice(0, 4).map((color, idx) => (
+                          <div 
+                            key={idx} 
+                            className="w-5 h-5 rounded-sm border border-gray-300 overflow-hidden" 
+                            title={color}
+                          >
+                            <div className="w-full h-full" style={{ backgroundColor: getColorHex(color) }} />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {filteredProducts.length === 0 && (
+                <div className="text-center py-12">
+                  <p className="text-gray-500 mb-4">No products match your filters</p>
+                  <button
+                    onClick={() => setFilters({ shapes: [], colors: [], genders: [], priceRange: null, materials: [] })}
+                    className="text-black underline"
+                  >
+                    Clear all filters
                   </button>
                 </div>
-                
-                {/* 产品信息 */}
-                <div className="px-1">
-                  <h3 className="font-medium text-lg mb-1">{product.name}</h3>
-                  <p className="font-medium mb-2">${product.price}</p>
-                  
-                  {/* 颜色选择器 - 小方块 */}
-                  <div className="flex gap-1.5">
-                    {product.colors.slice(0, 4).map((color, idx) => (
-                      <div 
-                        key={idx} 
-                        className="w-5 h-5 rounded-sm border border-gray-300 overflow-hidden" 
-                        title={color}
-                      >
-                        <div className="w-full h-full" style={{ backgroundColor: getColorHex(color) }} />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div className="text-center mt-12">
-            <a href="#all" className="inline-block border border-black px-8 py-3 rounded-full hover:bg-black hover:text-white transition-colors">
-              View More
-            </a>
+              )}
+            </div>
           </div>
         </div>
       </section>
