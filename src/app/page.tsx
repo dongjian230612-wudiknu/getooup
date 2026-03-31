@@ -25,8 +25,46 @@ function getColorHex(color: string): string {
     'Gunmetal': '#2C3539',
     'Pink': '#FFC0CB',
     'Black White': '#333333',
+    'Dark Blue': '#000080',
   };
   return colorMap[color] || '#cccccc';
+}
+
+// 生成 Sphere 选项: -18.00 到 +10.00，步进 0.25
+function generateSphereOptions(): string[] {
+  const options: string[] = [];
+  for (let v = -18.0; v <= 10.0; v += 0.25) {
+    const val = v.toFixed(2);
+    options.push(v >= 0 ? `+${val}` : val);
+  }
+  return options;
+}
+
+// 生成 Cylinder 选项: -6.00 到 0.00，步进 0.25
+function generateCylinderOptions(): string[] {
+  const options: string[] = [];
+  for (let v = -6.0; v <= 0.0; v += 0.25) {
+    options.push(v.toFixed(2));
+  }
+  return options;
+}
+
+// 生成 Axis 选项: 0 到 180
+function generateAxisOptions(): string[] {
+  const options: string[] = [];
+  for (let v = 0; v <= 180; v++) {
+    options.push(v.toString());
+  }
+  return options;
+}
+
+// 生成 PD 选项: 48 到 80
+function generatePDOptions(): string[] {
+  const options: string[] = [];
+  for (let v = 48; v <= 80; v++) {
+    options.push(v.toString());
+  }
+  return options;
 }
 
 export default function Home() {
@@ -581,22 +619,83 @@ function ProductModal({ product, selectedColor, setSelectedColor, selectedLens, 
                   </div>
                 )}
 
-                <div className="grid grid-cols-2 gap-4 mb-4">
-                  <div>
-                    <p className="font-medium mb-2 text-sm">Right Eye (OD)</p>
-                    <input placeholder="Sphere" className="w-full border p-2 rounded mb-2 text-sm" value={prescription.rightSphere} onChange={(e) => setPrescription({...prescription, rightSphere: e.target.value})} />
-                    <input placeholder="Cylinder" className="w-full border p-2 rounded mb-2 text-sm" value={prescription.rightCylinder} onChange={(e) => setPrescription({...prescription, rightCylinder: e.target.value})} />
-                    <input placeholder="Axis" className="w-full border p-2 rounded text-sm" value={prescription.rightAxis} onChange={(e) => setPrescription({...prescription, rightAxis: e.target.value})} />
-                  </div>
-                  <div>
-                    <p className="font-medium mb-2 text-sm">Left Eye (OS)</p>
-                    <input placeholder="Sphere" className="w-full border p-2 rounded mb-2 text-sm" value={prescription.leftSphere} onChange={(e) => setPrescription({...prescription, leftSphere: e.target.value})} />
-                    <input placeholder="Cylinder" className="w-full border p-2 rounded mb-2 text-sm" value={prescription.leftCylinder} onChange={(e) => setPrescription({...prescription, leftCylinder: e.target.value})} />
-                    <input placeholder="Axis" className="w-full border p-2 rounded text-sm" value={prescription.leftAxis} onChange={(e) => setPrescription({...prescription, leftAxis: e.target.value})} />
-                  </div>
+                {/* 表头 */}
+                <div className="grid grid-cols-4 gap-2 mb-2 text-sm font-medium text-gray-600">
+                  <div></div>
+                  <div>SPH</div>
+                  <div>CYL</div>
+                  <div>AXIS</div>
                 </div>
 
-                <input placeholder="PD (Pupillary Distance)" className="w-full border p-2 rounded mb-4 text-sm" value={prescription.pd} onChange={(e) => setPrescription({...prescription, pd: e.target.value})} />
+                {/* 右眼 */}
+                <div className="grid grid-cols-4 gap-2 mb-2 items-center">
+                  <div className="text-sm text-gray-500">Right Eye (OD)</div>
+                  <select 
+                    className="border p-2 rounded text-sm w-full"
+                    value={prescription.rightSphere}
+                    onChange={(e) => setPrescription({...prescription, rightSphere: e.target.value})}
+                  >
+                    <option value="">Select</option>
+                    {generateSphereOptions().map((v) => <option key={v} value={v}>{v}</option>)}
+                  </select>
+                  <select 
+                    className="border p-2 rounded text-sm w-full"
+                    value={prescription.rightCylinder}
+                    onChange={(e) => setPrescription({...prescription, rightCylinder: e.target.value})}
+                  >
+                    <option value="">Select</option>
+                    {generateCylinderOptions().map((v) => <option key={v} value={v}>{v}</option>)}
+                  </select>
+                  <select 
+                    className="border p-2 rounded text-sm w-full"
+                    value={prescription.rightAxis}
+                    onChange={(e) => setPrescription({...prescription, rightAxis: e.target.value})}
+                  >
+                    <option value="">Select</option>
+                    {generateAxisOptions().map((v) => <option key={v} value={v}>{v}</option>)}
+                  </select>
+                </div>
+
+                {/* 左眼 */}
+                <div className="grid grid-cols-4 gap-2 mb-4 items-center">
+                  <div className="text-sm text-gray-500">Left Eye (OS)</div>
+                  <select 
+                    className="border p-2 rounded text-sm w-full"
+                    value={prescription.leftSphere}
+                    onChange={(e) => setPrescription({...prescription, leftSphere: e.target.value})}
+                  >
+                    <option value="">Select</option>
+                    {generateSphereOptions().map((v) => <option key={v} value={v}>{v}</option>)}
+                  </select>
+                  <select 
+                    className="border p-2 rounded text-sm w-full"
+                    value={prescription.leftCylinder}
+                    onChange={(e) => setPrescription({...prescription, leftCylinder: e.target.value})}
+                  >
+                    <option value="">Select</option>
+                    {generateCylinderOptions().map((v) => <option key={v} value={v}>{v}</option>)}
+                  </select>
+                  <select 
+                    className="border p-2 rounded text-sm w-full"
+                    value={prescription.leftAxis}
+                    onChange={(e) => setPrescription({...prescription, leftAxis: e.target.value})}
+                  >
+                    <option value="">Select</option>
+                    {generateAxisOptions().map((v) => <option key={v} value={v}>{v}</option>)}
+                  </select>
+                </div>
+
+                <div className="mb-4">
+                  <p className="text-sm font-medium mb-2">PD (Pupillary Distance)</p>
+                  <select 
+                    className="border p-2 rounded text-sm w-full"
+                    value={prescription.pd}
+                    onChange={(e) => setPrescription({...prescription, pd: e.target.value})}
+                  >
+                    <option value="">Select PD</option>
+                    {generatePDOptions().map((v) => <option key={v} value={v}>{v}</option>)}
+                  </select>
+                </div>
                 
                 <div className="flex justify-between items-center pt-4 border-t">
                   <span className="text-xl font-medium">Total: ${total}</span>
