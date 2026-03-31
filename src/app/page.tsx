@@ -305,21 +305,28 @@ export default function Home() {
           {/* 模特图片网格 */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[
-              { id: 1, name: "Sarah", style: "DU301 Classic" },
-              { id: 2, name: "Michael", style: "DU302 Modern" },
-              { id: 3, name: "Emma", style: "8096 Rectangle" },
-              { id: 4, name: "David", style: "8095 Round" },
-              { id: 5, name: "Lisa", style: "8097 Cat Eye" },
-              { id: 6, name: "James", style: "OG203 Titanium" },
-              { id: 7, name: "Anna", style: "DU303 Elegant" },
-              { id: 8, name: "Chris", style: "8098 Oval" },
+              { id: 1, name: "Sarah", style: "DU301 Classic", image: "/images/model-1.png" },
+              { id: 2, name: "Michael", style: "DU302 Modern", image: "/images/model-2.jpg" },
+              { id: 3, name: "Emma", style: "8096 Rectangle", image: "/images/model-3.jpg" },
+              { id: 4, name: "David", style: "8095 Round", image: "" },
+              { id: 5, name: "Lisa", style: "8097 Cat Eye", image: "" },
+              { id: 6, name: "James", style: "OG203 Titanium", image: "" },
+              { id: 7, name: "Anna", style: "DU303 Elegant", image: "" },
+              { id: 8, name: "Chris", style: "8098 Oval", image: "" },
             ].map((person) => (
               <div key={person.id} className="group relative aspect-[3/4] bg-gray-100 rounded-lg overflow-hidden">
-                {/* 占位图 - 实际使用时替换为真实模特照片 */}
-                <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200">
-                  <span className="text-4xl mb-2">👤</span>
-                  <span className="text-xs text-gray-400">Model Photo</span>
-                </div>
+                {person.image ? (
+                  <img 
+                    src={person.image} 
+                    alt={`${person.name} wearing ${person.style}`}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                  />
+                ) : (
+                  <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200">
+                    <span className="text-4xl mb-2">👤</span>
+                    <span className="text-xs text-gray-400">Model Photo</span>
+                  </div>
+                )}
                 
                 {/* 悬停显示信息 */}
                 <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center text-white">
