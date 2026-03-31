@@ -5,6 +5,7 @@ import { ShoppingCart, User, Menu, X, Search } from 'lucide-react';
 import { products, lensOptions } from '@/lib/data';
 import { Product, CartItem, Prescription, LensOption } from '@/types';
 import { formatPrice, validatePrescription } from '@/lib/utils';
+import Quiz from '@/components/Quiz';
 
 // 辅助函数：获取颜色对应的十六进制值
 function getColorHex(color: string): string {
@@ -75,6 +76,7 @@ export default function Home() {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [showQuiz, setShowQuiz] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [selectedColor, setSelectedColor] = useState('');
   const [selectedLens, setSelectedLens] = useState<LensOption | null>(null);
@@ -133,7 +135,12 @@ export default function Home() {
               <a href="#eyeglasses" className="text-sm hover:opacity-70 transition-opacity">Eyeglasses</a>
               <a href="#sunglasses" className="text-sm hover:opacity-70 transition-opacity">Sunglasses</a>
               <a href="#brand" className="text-sm hover:opacity-70 transition-opacity">Brand</a>
-              <a href="#quiz" className="text-sm hover:opacity-70 transition-opacity">Quiz Results</a>
+              <button 
+                onClick={() => setShowQuiz(true)} 
+                className="text-sm hover:opacity-70 transition-opacity"
+              >
+                Quiz Results
+              </button>
             </nav>
 
             {/* Icons */}
@@ -163,7 +170,12 @@ export default function Home() {
             <a href="#eyeglasses" onClick={() => setIsMenuOpen(false)} className="block">Eyeglasses</a>
             <a href="#sunglasses" onClick={() => setIsMenuOpen(false)} className="block">Sunglasses</a>
             <a href="#brand" onClick={() => setIsMenuOpen(false)} className="block">Brand</a>
-            <a href="#quiz" onClick={() => setIsMenuOpen(false)} className="block">Quiz Results</a>
+            <button 
+              onClick={() => { setShowQuiz(true); setIsMenuOpen(false); }} 
+              className="block text-left"
+            >
+              Quiz Results
+            </button>
           </nav>
         </div>
       )}
@@ -444,6 +456,17 @@ export default function Home() {
       {/* Cart Sidebar */}
       {isCartOpen && (
         <CartSidebar cart={cart} onClose={() => setIsCartOpen(false)} total={cartTotal} />
+      )}
+      
+      {/* Quiz Modal */}
+      {showQuiz && (
+        <Quiz 
+          onClose={() => setShowQuiz(false)} 
+          onProductClick={(product) => {
+            openProduct(product);
+            setShowQuiz(false);
+          }}
+        />
       )}
     </div>
   );
