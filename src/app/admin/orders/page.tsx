@@ -84,7 +84,10 @@ export default function Orders() {
               <tr 
                 key={order.id} 
                 className="border-b hover:bg-gray-50 cursor-pointer"
-                onClick={() => window.location.href = '/admin/orders/detail/'}
+                onClick={() => {
+                  localStorage.setItem('current_order', JSON.stringify(order));
+                  window.location.href = '/admin/orders/detail/';
+                }}
               >
                 <td className="py-3 px-6 text-sm font-medium text-blue-600">{order.id}</td>
                 <td className="py-3 px-4">

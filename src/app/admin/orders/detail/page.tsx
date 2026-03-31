@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { X, Copy, MoreHorizontal, Package, Truck, CheckCircle, Clock } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { X, Copy, MoreHorizontal, Package, CheckCircle, Clock } from 'lucide-react';
 
 interface OrderItem {
   id: string;
@@ -61,90 +61,157 @@ interface Activity {
   time: string;
 }
 
-export default function OrderDetail() {
-  const [order] = useState({
-    id: '#509',
-    date: 'Mar 31, 2026 8:35 AM',
-    channel: 'Default Sales Channel',
-    status: 'captured' as const,
-    fulfillmentStatus: 'fulfilled' as const,
-  });
+interface OrderData {
+  id: string;
+  customer: string;
+  email: string;
+  amount: number;
+  status: string;
+  date: string;
+  items: number;
+}
 
-  const [items] = useState<OrderItem[]>([
-    { id: '1', name: 'lens', variant: 'TYPE-BLUE Ⓒ', description: 'Blue-light-filtering - -', price: 20.00, quantity: 1 },
-    { id: '2', name: 'lens', variant: '1.74 Ⓒ', description: '--1.74', price: 80.00, quantity: 1 },
-    { id: '3', name: 'lens', variant: 'TYPE-BLUE Ⓒ', description: 'Blue-light-filtering - -', price: 20.00, quantity: 1 },
-    { id: '4', name: 'lens', variant: '1.74 Ⓒ', description: '--1.74', price: 80.00, quantity: 1 },
-    { id: '5', name: 'SP985', variant: 'SP985-C12 Ⓒ', description: 'Tea Grey', price: 89.00, quantity: 1, image: '/products/sp985.jpg' },
-    { id: '6', name: 'DU502', variant: 'DU502-N1 Ⓒ', description: 'Black', price: 49.00, quantity: 1, image: '/products/du502.jpg' },
-  ]);
+// Default data when no order is selected
+const defaultOrder = {
+  id: '#509',
+  date: 'Mar 31, 2026 8:35 AM',
+  channel: 'Default Sales Channel',
+  status: 'captured' as const,
+  fulfillmentStatus: 'fulfilled' as const,
+};
 
-  const [prescriptions] = useState<Prescription[]>([
-    {
-      productName: 'SP985 Tea Grey Glasses',
-      rightEye: { sph: '-6.50', cyl: '-0.25', axis: '30' },
-      leftEye: { sph: '-6.00', cyl: '-0.75', axis: '170' },
-      pd: '73.00 (Shared)',
-    },
-    {
-      productName: 'DU502 Rounded Rectangle Black Glasses',
-      rightEye: { sph: '-5.75', cyl: '-0.25', axis: '30' },
-      leftEye: { sph: '-5.25', cyl: '-0.25', axis: '170' },
-      pd: '73.00 (Shared)',
-    },
-  ]);
+const defaultItems: OrderItem[] = [
+  { id: '1', name: 'lens', variant: 'TYPE-BLUE Ⓒ', description: 'Blue-light-filtering - -', price: 20.00, quantity: 1 },
+  { id: '2', name: 'lens', variant: '1.74 Ⓒ', description: '--1.74', price: 80.00, quantity: 1 },
+  { id: '3', name: 'lens', variant: 'TYPE-BLUE Ⓒ', description: 'Blue-light-filtering - -', price: 20.00, quantity: 1 },
+  { id: '4', name: 'lens', variant: '1.74 Ⓒ', description: '--1.74', price: 80.00, quantity: 1 },
+  { id: '5', name: 'SP985', variant: 'SP985-C12 Ⓒ', description: 'Tea Grey', price: 89.00, quantity: 1, image: '/products/sp985.jpg' },
+  { id: '6', name: 'DU502', variant: 'DU502-N1 Ⓒ', description: 'Black', price: 49.00, quantity: 1, image: '/products/du502.jpg' },
+];
 
-  const [customer] = useState<Customer>({
-    id: 'T. Tongmei Xu',
+const defaultPrescriptions: Prescription[] = [
+  {
+    productName: 'SP985 Tea Grey Glasses',
+    rightEye: { sph: '-6.50', cyl: '-0.25', axis: '30' },
+    leftEye: { sph: '-6.00', cyl: '-0.75', axis: '170' },
+    pd: '73.00 (Shared)',
+  },
+  {
+    productName: 'DU502 Rounded Rectangle Black Glasses',
+    rightEye: { sph: '-5.75', cyl: '-0.25', axis: '30' },
+    leftEye: { sph: '-5.25', cyl: '-0.25', axis: '170' },
+    pd: '73.00 (Shared)',
+  },
+];
+
+const defaultCustomer: Customer = {
+  id: 'T. Tongmei Xu',
+  name: 'Tongmei Xu',
+  email: 'mayxu2013@gmail.com',
+  phone: '14256983727',
+  shippingAddress: {
     name: 'Tongmei Xu',
-    email: 'mayxu2013@gmail.com',
-    phone: '14256983727',
-    shippingAddress: {
-      name: 'Tongmei Xu',
-      line1: '23524 NE 22ND ST',
-      line2: 'Sammamish Washington',
-      city: 'Sammamish',
-      state: 'Washington',
-      zip: '98074',
-      country: 'United States',
-    },
-    billingAddressSame: true,
-  });
+    line1: '23524 NE 22ND ST',
+    line2: 'Sammamish Washington',
+    city: 'Sammamish',
+    state: 'Washington',
+    zip: '98074',
+    country: 'United States',
+  },
+  billingAddressSame: true,
+};
 
-  const [payment] = useState<Payment>({
-    id: '#TFK8492',
-    date: '31 Mar, 2026, 08:35:14',
-    method: 'Pp_useepay_ussepay',
-    status: 'captured',
-    amount: 358.28,
-  });
+const defaultPayment: Payment = {
+  id: '#TFK8492',
+  date: '31 Mar, 2026, 08:35:14',
+  method: 'Pp_useepay_ussepay',
+  status: 'captured',
+  amount: 358.28,
+};
 
-  const [fulfillment] = useState<Fulfillment>({
-    id: '#1',
-    status: 'awaiting',
-    items: [
-      '1x Blue-light-filtering',
-      '1x 1.74',
-      '1x Blue-light-filtering',
-      '1x 1.74',
-      '1x SP985 Tea Grey Glasses',
-      '1x DU502 Rounded Rectangle Black Glasses',
-    ],
-    shippingFrom: 'ShenZhen Location',
-    provider: 'Manual',
-    tracking: '-',
-  });
+const defaultFulfillment: Fulfillment = {
+  id: '#1',
+  status: 'awaiting',
+  items: [
+    '1x Blue-light-filtering',
+    '1x 1.74',
+    '1x Blue-light-filtering',
+    '1x 1.74',
+    '1x SP985 Tea Grey Glasses',
+    '1x DU502 Rounded Rectangle Black Glasses',
+  ],
+  shippingFrom: 'ShenZhen Location',
+  provider: 'Manual',
+  tracking: '-',
+};
 
-  const [activities] = useState<Activity[]>([
-    { id: '1', action: 'Items fulfilled', detail: '6 items', time: 'about 10 hours ago' },
-    { id: '2', action: 'Payment captured', detail: '$ 358.28 USD', time: 'about 10 hours ago' },
-    { id: '3', action: 'Order placed', detail: '$ 358.28 USD', time: 'about 18 hours ago' },
-  ]);
+const defaultActivities: Activity[] = [
+  { id: '1', action: 'Items fulfilled', detail: '6 items', time: 'about 10 hours ago' },
+  { id: '2', action: 'Payment captured', detail: '$ 358.28 USD', time: 'about 10 hours ago' },
+  { id: '3', action: 'Order placed', detail: '$ 358.28 USD', time: 'about 18 hours ago' },
+];
+
+export default function OrderDetail() {
+  const [currentOrder, setCurrentOrder] = useState<OrderData | null>(null);
+  
+  const [order, setOrder] = useState(defaultOrder);
+  const [items, setItems] = useState<OrderItem[]>(defaultItems);
+  const [prescriptions] = useState<Prescription[]>(defaultPrescriptions);
+  const [customer, setCustomer] = useState<Customer>(defaultCustomer);
+  const [payment, setPayment] = useState<Payment>(defaultPayment);
+  const [fulfillment] = useState<Fulfillment>(defaultFulfillment);
+  const [activities] = useState<Activity[]>(defaultActivities);
+
+  useEffect(() => {
+    // Load order from localStorage
+    const savedOrder = localStorage.getItem('current_order');
+    if (savedOrder) {
+      try {
+        const orderData: OrderData = JSON.parse(savedOrder);
+        setCurrentOrder(orderData);
+        
+        // Update order display with list data
+        setOrder({
+          id: orderData.id,
+          date: orderData.date,
+          channel: 'Default Sales Channel',
+          status: orderData.status === 'delivered' ? 'captured' : 'pending',
+          fulfillmentStatus: orderData.status === 'delivered' ? 'fulfilled' : 'awaiting',
+        });
+        
+        // Update customer
+        setCustomer({
+          ...defaultCustomer,
+          name: orderData.customer,
+          email: orderData.email,
+          id: orderData.customer,
+          shippingAddress: {
+            ...defaultCustomer.shippingAddress,
+            name: orderData.customer,
+          },
+        });
+        
+        // Update payment
+        setPayment({
+          ...defaultPayment,
+          amount: orderData.amount,
+          status: orderData.status === 'delivered' ? 'captured' : 'pending',
+        });
+        
+        // Generate simple items based on order
+        setItems([
+          { id: '1', name: 'Product', variant: orderData.id, price: orderData.amount, quantity: 1 },
+        ]);
+      } catch (e) {
+        console.error('Failed to parse order data', e);
+      }
+    }
+  }, []);
 
   const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const shipping = 0;
-  const tax = 20.28;
-  const total = subtotal + shipping + tax;
+  const tax = currentOrder ? currentOrder.amount * 0.1 : 20.28;
+  const total = currentOrder ? currentOrder.amount : subtotal + shipping + tax;
   const discount = 0;
 
   const copyToClipboard = (text: string) => {
@@ -156,9 +223,9 @@ export default function OrderDetail() {
       {/* Header */}
       <header className="h-14 bg-white border-b flex items-center justify-between px-4 sticky top-0 z-10">
         <div className="flex items-center gap-4">
-          <button className="p-1 hover:bg-gray-100 rounded">
+          <a href="/admin/orders/" className="p-1 hover:bg-gray-100 rounded">
             <X size={20} className="text-gray-500" />
-          </button>
+          </a>
           <div className="flex items-center gap-2">
             <span className="font-medium">{order.id}</span>
             <button 
@@ -174,11 +241,11 @@ export default function OrderDetail() {
           <span className="text-sm text-gray-500">{order.date} from {order.channel}</span>
           <div className="flex items-center gap-1 px-2 py-1 bg-green-50 text-green-700 rounded text-xs">
             <CheckCircle size={12} />
-            Captured
+            {order.status === 'captured' ? 'Captured' : 'Pending'}
           </div>
           <div className="flex items-center gap-1 px-2 py-1 bg-green-50 text-green-700 rounded text-xs">
             <CheckCircle size={12} />
-            Fulfilled
+            {order.fulfillmentStatus === 'fulfilled' ? 'Fulfilled' : 'Awaiting'}
           </div>
           <button className="p-1 hover:bg-gray-100 rounded">
             <MoreHorizontal size={20} className="text-gray-400" />
@@ -270,7 +337,7 @@ export default function OrderDetail() {
                 <h2 className="font-medium">Payments</h2>
                 <div className="flex items-center gap-1 px-2 py-1 bg-green-50 text-green-700 rounded text-xs">
                   <CheckCircle size={12} />
-                  Captured
+                  {payment.status === 'captured' ? 'Captured' : 'Pending'}
                 </div>
               </div>
 
@@ -283,7 +350,9 @@ export default function OrderDetail() {
                   <span className="text-sm text-gray-600">{payment.method}</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="px-2 py-1 bg-green-50 text-green-700 rounded text-xs">Captured</span>
+                  <span className={`px-2 py-1 rounded text-xs ${payment.status === 'captured' ? 'bg-green-50 text-green-700' : 'bg-yellow-50 text-yellow-700'}`}>
+                    {payment.status === 'captured' ? 'Captured' : 'Pending'}
+                  </span>
                   <span className="text-sm font-medium">${payment.amount.toFixed(2)}</span>
                   <button className="p-1 hover:bg-gray-100 rounded">
                     <MoreHorizontal size={16} className="text-gray-400" />
@@ -392,8 +461,7 @@ export default function OrderDetail() {
               </div>
 
               <div className="space-y-4">
-                <div className="flex justify-between text-sm"
-                  >
+                <div className="flex justify-between text-sm">
                   <span className="text-gray-500">ID</span>
                   <span>{customer.id}</span>
                 </div>
