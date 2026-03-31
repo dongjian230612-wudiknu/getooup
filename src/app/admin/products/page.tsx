@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Search, Plus, Edit2, Trash2, Eye } from 'lucide-react';
+import { Search, Plus, Edit2, Trash2, Eye, X } from 'lucide-react';
 import { products } from '@/lib/data';
 
 interface AdminProduct {
@@ -19,6 +19,17 @@ export default function Products() {
   const [productList, setProductList] = useState<AdminProduct[]>(products as AdminProduct[]);
   const [search, setSearch] = useState('');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [newProduct, setNewProduct] = useState<Partial<AdminProduct>>({
+    name: '',
+    description: '',
+    price: 49,
+    category: 'standard',
+    colors: [],
+    image: '',
+    bestSeller: false,
+  });
+  const [colorInput, setColorInput] = useState('');
 
   const filteredProducts = productList.filter(product => {
     const matchesSearch = 
@@ -49,7 +60,10 @@ export default function Products() {
           <h1 className="text-2xl font-medium">Products</h1>
           <p className="text-gray-500">Manage your product catalog</p>
         </div>
-        <button className="flex items-center gap-2 bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800">
+        <button 
+          onClick={() => setShowAddModal(true)}
+          className="flex items-center gap-2 bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800"
+        >
           <Plus size={18} />
           Add Product
         </button>
@@ -177,6 +191,167 @@ export default function Products() {
           </div>
         )}
       </div>
+
+      {/* Add Product Modal */}
+      {showAddModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/50" onClick={() => setShowAddModal(false)} />
+          <div className="relative bg-white rounded-lg shadow-xl w-full max-w-lg max-h-[90vh] overflow-auto">
+            <div className="flex items-center justify-between p-6 border-b">
+              <h2 className="text-xl font-medium">Add New Product</h2>
+              <button onClick={() => setShowAddModal(false)} className="p-2 hover:bg-gray-100 rounded-lg">
+                <X size={20} />
+              </button>
+            </div>
+            
+            <form className="p-6 space-y-4" onSubmit={(e) => {
+              e.preventDefault();
+              const product: AdminProduct = {
+                id: 'new-' + Date.now(),
+                name: newProduct.name || '',
+                description: newProduct.description || '',
+                price: newProduct.price || 49,
+                category: newProduct.category || 'standard',
+                colors: newProduct.colors || [],
+                image: newProduct.image || '',
+                bestSeller: false,
+              };
+              setProductList([...productList, product]);
+              setShowAddModal(false);
+              setNewProduct({
+                name: '',
+                description: '',
+                price: 49,
+                category: 'standard',
+                colors: [],
+                image: '',
+                bestSeller: false,
+              });
+            }}>
+              <div>
+                <label className="block text-sm font-medium mb-1">Product Name *</label>
+                <input
+                  type="text"
+                  required
+                  value={newProduct.name}
+                  onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-black"
+                  placeholder="e.g., Classic Round Frame"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-1">Description</label>
+                <textarea
+                  value={newProduct.description}
+                  onChange={(e) => setNewProduct({ ...newProduct, description: e.target.value })}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-black h-20"
+                  placeholder="Product description..."
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1">Price ($) *</label>
+                  <input
+                    type="number"
+                    required
+                    min="0"
+                    value={newProduct.price}
+                    onChange={(e) => setNewProduct({ ...newProduct, price: parseFloat(e.target.value) })}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-black"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Category *</label>
+                  <select
+                    value={newProduct.category}
+                    onChange={(e) => setNewProduct({ ...newProduct, category: e.target.value })}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-black"
+                  >
+                    <option value="standard">Standard</option>
+                    <option value="asiafit">AsiaFit</option>
+                    <option value="sunglasses">Sunglasses</option>
+                    <option value="lenses">Lenses</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-1">Colors</label>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={colorInput}
+                    onChange={(e) => setColorInput(e.target.value)}
+                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-black"
+                    placeholder="e.g., Black"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (colorInput.trim()) {
+                        setNewProduct({
+                          ...newProduct,
+                          colors: [...(newProduct.colors || []), colorInput.trim()],
+                        });
+                        setColorInput('');
+                      }
+                    }}
+                    className="px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200"
+                  >
+                    Add
+                  </button>
+                </div>
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {newProduct.colors?.map((color, idx) => (
+                    <span key={idx} className="px-3 py-1 bg-gray-100 rounded-full text-sm flex items-center gap-1">
+                      {color}
+                      <button
+                        type="button"
+                        onClick={() => setNewProduct({
+                          ...newProduct,
+                          colors: newProduct.colors?.filter((_, i) => i !== idx),
+                        })}
+                        className="text-gray-400 hover:text-red-600"
+                      >
+                        ×
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-1">Image URL</label>
+                <input
+                  type="text"
+                  value={newProduct.image}
+                  onChange={(e) => setNewProduct({ ...newProduct, image: e.target.value })}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-black"
+                  placeholder="/images/product-name.png"
+                />
+              </div>
+
+              <div className="flex gap-3 pt-4">
+                <button
+                  type="button"
+                  onClick={() => setShowAddModal(false)}
+                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800"
+                >
+                  Add Product
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
