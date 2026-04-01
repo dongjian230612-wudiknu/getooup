@@ -19,7 +19,7 @@ export default function AdminLogin() {
 
     if (email === 'admin@getooup.com' && password === 'admin123') {
       localStorage.setItem('admin_token', 'demo_token');
-      router.push('/admin/dashboard');
+      router.push('/admin/orders');
     } else {
       setError('Invalid email or password');
       setLoading(false);

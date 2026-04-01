@@ -79,7 +79,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <aside className="w-64 border-r bg-white flex flex-col fixed inset-y-0 left-0">
         {/* Logo */}
         <div className="h-14 border-b flex items-center px-4">
-          <a href="/admin/dashboard" className="flex items-center gap-2">
+          <a href="/admin/orders" className="flex items-center gap-2">
             <div className="w-8 h-8 bg-black text-white rounded flex items-center justify-center font-bold text-sm">
               G
             </div>

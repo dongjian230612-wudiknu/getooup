@@ -1,15 +1,15 @@
 {
   "/_not-found/page": "app/_not-found/page.js",
   "/checkout/page": "app/checkout/page.js",
-  "/checkout/success/page": "app/checkout/success/page.js",
   "/page": "app/page.js",
-  "/admin/customers/page": "app/admin/customers/page.js",
+  "/checkout/success/page": "app/checkout/success/page.js",
   "/admin/dashboard/page": "app/admin/dashboard/page.js",
+  "/admin/customers/page": "app/admin/customers/page.js",
   "/admin/lens/page": "app/admin/lens/page.js",
   "/admin/orders/detail/page": "app/admin/orders/detail/page.js",
   "/admin/orders/page": "app/admin/orders/page.js",
   "/admin/page": "app/admin/page.js",
   "/admin/products/page": "app/admin/products/page.js",
-  "/admin/product-edit/page": "app/admin/product-edit/page.js",
-  "/admin/settings/page": "app/admin/settings/page.js"
+  "/admin/settings/page": "app/admin/settings/page.js",
+  "/admin/product-edit/page": "app/admin/product-edit/page.js"
 }
